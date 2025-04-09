@@ -16,12 +16,12 @@ const Contact = () => {
   const sendEmail = (e) => {
     e.preventDefault();
     setLoading(true); // Show loading while sending
-
-    const serviceID = 'service_xw4mgul';
-    const templateID_owner = 'template_fps3y4e';
-    const templateID_user = 'template_33dy2zk';
-    const publicKey = 'dzjvpRfoipxkb4D_l';
-
+  
+    const serviceID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const templateID_owner = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_OWNER;
+    const templateID_user = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_USER;
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+  
     // First send: to owner
     emailjs.sendForm(serviceID, templateID_owner, form.current, publicKey)
       .then(() => {
@@ -29,7 +29,7 @@ const Contact = () => {
         emailjs.sendForm(serviceID, templateID_user, form.current, publicKey)
           .then(() => {
             setSubmitted(true);
-            setLoading(false); // Stop loading
+            setLoading(false);
           })
           .catch((err) => {
             console.error("Auto-reply failed:", err);
@@ -41,6 +41,7 @@ const Contact = () => {
         setLoading(false);
       });
   };
+  
 
   return (
     <div className="min-h-screen bg-[#fffaf5] text-[#6B4F4F] font-serif px-4 py-12 sm:px-6 text-center">
