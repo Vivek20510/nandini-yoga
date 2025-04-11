@@ -105,14 +105,45 @@ const Contact = () => {
             className="w-full mb-4 p-3 border border-[#d3b8ae] rounded"
           />
 
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full px-6 py-3 rounded-full font-semibold transition 
-              ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#d3b8ae] hover:bg-[#c7a99a] text-white"}`}
-          >
-            {loading ? "Sending..." : "Send with Grace"}
-          </button>
+<button
+  type="submit"
+  disabled={loading}
+  className={`w-full px-6 py-3 sm:px-8 sm:py-4 rounded-full font-semibold text-white text-base sm:text-lg shadow-lg transition-all duration-300 ease-in-out 
+    ${loading 
+      ? "bg-gray-400 cursor-not-allowed"
+      : "bg-gradient-to-r from-[#d3b8ae] to-[#c7a99a] hover:from-[#c6a89a] hover:to-[#b89b8f] hover:shadow-xl"
+    } focus:outline-none focus:ring-4 focus:ring-[#d3b8ae]/50`}
+  aria-label="Send with Grace"
+>
+  {loading ? (
+    <span className="flex items-center justify-center space-x-2">
+      <svg
+        className="animate-spin h-5 w-5 text-white"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          className="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+        ></circle>
+        <path
+          className="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8v8H4z"
+        ></path>
+      </svg>
+      <span>Sending...</span>
+    </span>
+  ) : (
+    "Send with Grace"
+  )}
+</button>
+
         </form>
       )}
     </motion.div>

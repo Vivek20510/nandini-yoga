@@ -23,6 +23,19 @@ const App = () => {
           <Route path="/contact" element={<Contact />} />
         </Routes>
       </AnimatePresence>
+
+      {/* Footer */}
+      <footer className="bg-[#f8f1ee] text-[#6B4F4F] text-center py-6 mt-10 border-t border-[#e0d4d1]">
+        <div className="container mx-auto px-4">
+          <p className="text-sm sm:text-base">
+            &copy; {new Date().getFullYear()} Crafted with ♥ by Vivek Badodiya. All rights reserved.
+          </p>
+          <p className="text-xs text-[#6B4F4F] mt-4 italic">
+  Vivek Badodiya™ — Crafting Digital Elegance • Est. 2024
+</p>
+
+        </div>
+      </footer>
     </>
   );
 };
