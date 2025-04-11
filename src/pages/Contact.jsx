@@ -1,11 +1,12 @@
 import React, { useRef, useState } from "react";
 import emailjs from "emailjs-com";
+import { motion } from "framer-motion"; // 👈 import motion
 
 const Contact = () => {
   const form = useRef();
   const [submitted, setSubmitted] = useState(false);
   const [reason, setReason] = useState("General Enquiry");
-  const [loading, setLoading] = useState(false); // Added loading state
+  const [loading, setLoading] = useState(false);
 
   const messageSuggestions = {
     "General Enquiry": "I'd love to learn more about your sessions and offerings.",
@@ -15,36 +16,34 @@ const Contact = () => {
 
   const sendEmail = (e) => {
     e.preventDefault();
-    setLoading(true); // Show loading while sending
-  
+    setLoading(true);
+
     const serviceID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
     const templateID_owner = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_OWNER;
     const templateID_user = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_USER;
     const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-  
-    // First send: to owner
+
     emailjs.sendForm(serviceID, templateID_owner, form.current, publicKey)
       .then(() => {
-        // Then auto-reply to user
-        emailjs.sendForm(serviceID, templateID_user, form.current, publicKey)
-          .then(() => {
-            setSubmitted(true);
-            setLoading(false);
-          })
-          .catch((err) => {
-            console.error("Auto-reply failed:", err);
-            setLoading(false);
-          });
+        return emailjs.sendForm(serviceID, templateID_user, form.current, publicKey);
+      })
+      .then(() => {
+        setSubmitted(true);
+        setLoading(false);
       })
       .catch((err) => {
-        console.error("Sending message failed:", err);
+        console.error("Message error:", err);
         setLoading(false);
       });
   };
-  
 
   return (
-    <div className="min-h-screen bg-[#fffaf5] text-[#6B4F4F] font-serif px-4 py-12 sm:px-6 text-center">
+    <motion.div
+      initial={{ opacity: 0, y: 100 }} // 👈 from below
+      animate={{ opacity: 1, y: 0 }}   // 👈 to normal position
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="min-h-screen bg-[#fffaf5] text-[#6B4F4F] font-serif px-4 py-12 sm:px-6 text-center"
+    >
       <h2 className="text-3xl sm:text-4xl font-bold mb-4">Let’s Flow Together</h2>
       <p className="mb-8 text-md sm:text-lg text-[#7a5c5c]">
         Your journey matters. Whether you’re curious, committed, or just seeking balance — we’re here to listen.
@@ -58,6 +57,7 @@ const Contact = () => {
           onSubmit={sendEmail}
           className="max-w-xl mx-auto bg-white p-6 sm:p-8 rounded-lg shadow-md text-left"
         >
+          {/* All form fields remain unchanged */}
           <label className="block mb-2 font-medium">Your Name *</label>
           <input
             type="text"
@@ -115,7 +115,7 @@ const Contact = () => {
           </button>
         </form>
       )}
-    </div>
+    </motion.div>
   );
 };
 
