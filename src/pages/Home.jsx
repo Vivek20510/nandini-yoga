@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import yogaPose from "../assets/yoga-pose-3.png"; 
+// import yogaPose from "../assets/yoga-pose-3.png"; 
 import { motion } from "framer-motion";
 import Lottie from "lottie-react";
 import YogaAnimation from "../assets/yoga-animation.json";
@@ -26,14 +26,16 @@ const Home = () => {
     </p>
 
 
-     <div className="mt-6 w-44 sm:w-56 md:w-64 h-44 sm:h-56 md:h-64 rounded-full border-4 border-[#d3b8ae] shadow-md bg-[#FFF6F9] p-1 flex items-center justify-center">
-      <Lottie 
-        animationData={YogaAnimation} 
-        loop={true} 
-        autoplay={true} 
-        className="w-full h-full"
-      />
-      </div>
+    <div className="mt-6 w-44 sm:w-56 md:w-64 h-44 sm:h-56 md:h-64 rounded-full border-4 border-[#d3b8ae] shadow-md bg-[#FFF6F9] p-1 flex items-center justify-center">
+  <Lottie 
+    animationData={YogaAnimation} 
+    loop={true} 
+    autoplay={true} 
+    className="w-full h-full -translate-y-2"
+  />
+  
+</div>
+
 
       {/* <img
         src={yogaPose}
@@ -78,42 +80,49 @@ const Home = () => {
 </section>
 
 
-      {/* Why Yoga Section */}
-      {/* <section className="py-16 px-4 sm:px-6 lg:px-8 bg-[#fff0f4] text-center relative overflow-hidden">
+      {/* showcase Section */}
+      {/* <section className="py-16 px-4 sm:px-6 lg:px-8 bg-[#fff0f4] text-center relative overflow-hidden"> */}
   {/* Decorative floral background blur */}
   {/* <div className="absolute top-0 left-0 w-40 h-40 bg-pink-200 opacity-30 rounded-full blur-3xl animate-pulse"></div>
   <div className="absolute bottom-0 right-0 w-40 h-40 bg-rose-100 opacity-20 rounded-full blur-2xl animate-ping"></div>
 
   <h3 className="text-3xl font-bold text-[#6B4F4F] mb-3 tracking-wide relative z-10">
-    Why Practice Yoga?
+    Yoga Events & Achievements
   </h3>
   <p className="text-[#7a5c5c] max-w-xl mx-auto mb-10 text-base sm:text-lg z-10 relative">
-    Discover the holistic benefits that harmonize your mind, body, and soul.
+    Glimpses of our journey through serene moments, vibrant events, and inspiring milestones.
   </p>
 
   <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-6xl mx-auto z-10 relative"> */}
-    {/* Card 1 */}
-    {/* <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 hover:scale-105 transform transition duration-300 border-t-4 border-[#f3c1d9]">
-      <h4 className="text-2xl mb-2">🧘‍♀️</h4>
-      <h5 className="text-[#6B4F4F] font-semibold text-lg mb-1">Flexibility & Strength</h5>
-      <p className="text-[#7a5c5c] text-sm">Improve posture and build lean muscle through mindful movement.</p>
+    {/* Photo/Event Card 1 */}
+    {/* <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden hover:scale-105 transform transition duration-300 border-t-4 border-[#f3c1d9]">
+      <img src="/images/yoga-event1.jpg" alt="Yoga Event 1" className="w-full h-48 object-cover" />
+      <div className="p-6">
+        <h5 className="text-[#6B4F4F] font-semibold text-lg mb-1">Sunrise Yoga Retreat</h5>
+        <p className="text-[#7a5c5c] text-sm">A soulful morning with nature and mindfulness in harmony.</p>
+      </div>
     </div> */}
 
-    {/* Card 2 */}
-    {/* <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 hover:scale-105 transform transition duration-300 border-t-4 border-[#f3c1d9]">
-      <h4 className="text-2xl mb-2">🧠</h4>
-      <h5 className="text-[#6B4F4F] font-semibold text-lg mb-1">Mental Clarity</h5>
-      <p className="text-[#7a5c5c] text-sm">Breathwork and mindfulness bring calm and focus to your mind.</p>
+    {/* Photo/Event Card 2 */}
+    {/* <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden hover:scale-105 transform transition duration-300 border-t-4 border-[#f3c1d9]">
+      <img src="/images/yoga-award.jpg" alt="Yoga Achievement" className="w-full h-48 object-cover" />
+      <div className="p-6">
+        <h5 className="text-[#6B4F4F] font-semibold text-lg mb-1">National Yoga Award</h5>
+        <p className="text-[#7a5c5c] text-sm">Honored for promoting wellness through consistent yoga outreach.</p>
+      </div>
     </div> */}
 
-    {/* Card 3 */}
-    {/* <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 hover:scale-105 transform transition duration-300 border-t-4 border-[#f3c1d9]">
-      <h4 className="text-2xl mb-2">💤</h4>
-      <h5 className="text-[#6B4F4F] font-semibold text-lg mb-1">Better Sleep</h5>
-      <p className="text-[#7a5c5c] text-sm">Create balance within to improve your natural sleep cycles.</p>
+    {/* Photo/Event Card 3 */}
+    {/* <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden hover:scale-105 transform transition duration-300 border-t-4 border-[#f3c1d9]">
+      <img src="/images/kids-yoga.jpg" alt="Kids Yoga Session" className="w-full h-48 object-cover" />
+      <div className="p-6">
+        <h5 className="text-[#6B4F4F] font-semibold text-lg mb-1">Kids Yoga Camp</h5>
+        <p className="text-[#7a5c5c] text-sm">Empowering young minds through fun, focus, and flexibility.</p>
+      </div>
     </div>
   </div>
 </section> */}
+
 
     </motion.div>
   );
