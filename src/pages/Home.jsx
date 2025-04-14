@@ -65,7 +65,7 @@ const Home = () => {
   <p className="max-w-md sm:max-w-3xl mx-auto mt-4 text-base sm:text-lg leading-relaxed text-[#7a5c5c]">
     <span className="italic">“Yoga is the perfume of peace — it lingers long after the practice.”</span><br /><br />
 
-    Nandini Singh is a certified international yoga and meditation teacher with over 8 years of experience in guiding individuals toward holistic wellness. With a heart rooted in ancient wisdom and a mind open to modern practices, she artfully blends yoga asanas, pranayama, and mindfulness to awaken physical vitality, emotional harmony, and mental clarity.<br /><br />
+    Nandini Singh is a certified international yoga and meditation teacher with over 15 years of experience in guiding individuals toward holistic wellness. With a heart rooted in ancient wisdom and a mind open to modern practices, she artfully blends yoga asanas, pranayama, and mindfulness to awaken physical vitality, emotional harmony, and mental clarity.<br /><br />
 
     Her path has been shaped by profound training at some of the world’s most respected institutions:<br /><br />
     

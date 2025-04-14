@@ -44,10 +44,12 @@ const Contact = () => {
       transition={{ duration: 0.6, ease: "easeOut" }}
       className="min-h-screen bg-[#fffaf5] text-[#6B4F4F] font-serif px-4 py-12 sm:px-6 text-center"
     >
-      <h2 className="text-3xl sm:text-4xl font-bold mb-4">Let’s Flow Together</h2>
-      <p className="mb-8 text-md sm:text-lg text-[#7a5c5c]">
-        Your journey matters. Whether you’re curious, committed, or just seeking balance — we’re here to listen.
-      </p>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">Contact Us</h2>
+<p className="mb-8 text-md sm:text-lg text-[#7a5c5c] italic">
+  We welcome your inquiries and collaboration opportunities. Whether you’re seeking details about our offerings or wish to discuss a potential partnership, feel free to reach out — we’re here to assist you.
+</p>
+
+
 
       {submitted ? (
         <p className="text-xl text-green-700">Your message has been infused with peace 🌸</p>
