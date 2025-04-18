@@ -49,7 +49,7 @@ const Home = () => {
     className="group relative inline-block px-8 py-3 sm:px-10 sm:py-4 rounded-full bg-[#d3b8ae] text-white text-base sm:text-lg font-semibold shadow-lg transition-all duration-300 hover:bg-[#c6a597] focus:outline-none focus:ring-4 focus:ring-[#d3b8ae]/50"
     aria-label="Contact Us"
   >
-    <span className="relative z-10">Contact Us</span>
+    <span className="relative z-10">Let’s Talk</span>
     <span className="absolute inset-0 rounded-full bg-white opacity-10 group-hover:opacity-20 transition duration-300" />
   </Link>
 </div>
