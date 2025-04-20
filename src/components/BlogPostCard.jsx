@@ -4,24 +4,22 @@ import ReactPlayer from 'react-player';
 const BlogPostCard = ({ post }) => {
   const { title, url, type, desc } = post;
 
-  const handleShare = (post) => {
-    const shareUrl = `${window.location.origin}/blog/${post.slug || post.id}`;
-
+  const handleShare = () => {
+    const shareUrl = `${window.location.origin}/blog`;
+  
     if (navigator.share) {
-      navigator
-        .share({
-          title: post.title,
-          text: 'Check out this blog post!',
-          url: shareUrl,
-        })
-        .catch((err) => console.error('Sharing failed:', err));
+      navigator.share({
+        title: 'Yoga by Nandini – Blog',
+        text: 'Check out the blog posts!',
+        url: shareUrl,
+      }).catch((err) => console.error('Sharing failed:', err));
     } else {
       navigator.clipboard.writeText(shareUrl).then(() => {
-        // Optional: use a toast or modal instead
-        alert('🔗 Post link copied to clipboard!');
+        alert('Blog link copied to clipboard!');
       });
     }
   };
+  
 
   return (
     <article className="max-w-2xl mx-auto mb-20 font-sans text-[#111]">
