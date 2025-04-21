@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const PinModal = ({ onSuccess, onClose }) => {
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
+  
+  // Ref for the PIN input field
+  const pinInputRef = useRef(null);
+
+  // Focus the input field when the modal opens
+  useEffect(() => {
+    pinInputRef.current?.focus();
+  }, []);
 
   const handleVerify = () => {
     const correctPin = import.meta.env.VITE_ADMIN_PIN;
@@ -12,6 +20,12 @@ const PinModal = ({ onSuccess, onClose }) => {
       onSuccess();
     } else {
       setError('Incorrect PIN. Try again.');
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleVerify();
     }
   };
 
@@ -35,10 +49,12 @@ const PinModal = ({ onSuccess, onClose }) => {
           </h2>
 
           <input
+            ref={pinInputRef} // Focus input programmatically
             type="password"
             maxLength="4"
             value={pin}
             onChange={(e) => setPin(e.target.value)}
+            onKeyDown={handleKeyDown} // Handle Enter key press
             className="border border-[#d3b8b0] px-3 py-2 w-full rounded-lg text-center text-xl tracking-widest bg-[#fefaf8] focus:outline-none focus:ring-2 focus:ring-[#c78da3] placeholder:text-[#baa9a3]"
             placeholder="••••"
           />
