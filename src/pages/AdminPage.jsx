@@ -23,7 +23,7 @@ const AdminUpload = () => {
 
   return (
     <>
-      <div className="absolute top-4 left-6 text-xl font-semibold text-[#7c5e3b] font-serif">
+      <div className="absolute top-19 left-6 text-xl font-semibold text-[#7c5e3b] font-serif">
         Welcome, Nandini Mam!
       </div>
 
