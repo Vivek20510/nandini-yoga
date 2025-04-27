@@ -1,19 +1,26 @@
 import React, { useState, useRef } from 'react';
 import ReactPlayer from 'react-player';
-import { Helmet } from 'react-helmet';
 
 const BlogPostCard = ({ post }) => {
-  const { id, title, media = [], desc } = post;
+  const { title, media = [], desc } = post;
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const startX = useRef(0);
   const isDragging = useRef(false);
 
+  // Handle start of touch or mouse down
   const handleStart = (e) => {
     isDragging.current = true;
     startX.current = e.touches ? e.touches[0].clientX : e.clientX;
   };
 
+  // Handle the movement of touch or mouse drag
+  const handleMove = (e) => {
+    if (!isDragging.current) return;
+    // Optional: add drag effect
+  };
+
+  // Handle end of drag or touch event
   const handleEnd = (e) => {
     if (!isDragging.current) return;
     const endX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
@@ -28,24 +35,30 @@ const BlogPostCard = ({ post }) => {
     isDragging.current = false;
   };
 
+  // Move to previous media item
   const handlePrev = () => {
     setCurrentIndex((prev) => (prev === 0 ? media.length - 1 : prev - 1));
   };
 
+  // Move to next media item
   const handleNext = () => {
     setCurrentIndex((prev) => (prev === media.length - 1 ? 0 : prev + 1));
   };
 
+  // Handle share functionality
   const handleShare = () => {
-    const shareUrl = `${window.location.origin}/blog?id=${id}`;
+    // Construct the shareable URL using the updated format: /blog?id=someBlogId
+    const shareUrl = `${window.location.origin}/blog?id=${post.id}`;
   
     if (navigator.share) {
+      // If the Web Share API is supported, use it to share the content
       navigator.share({
         title: 'Yoga by Nandini – Blog',
         text: 'Check out the blog post!',
         url: shareUrl,
       }).catch((error) => console.error('Sharing failed:', error));
     } else {
+      // If Web Share API is not supported, copy the URL to the clipboard
       navigator.clipboard.writeText(shareUrl).then(() => {
         alert('Blog link copied to clipboard!');
       }).catch((error) => {
@@ -53,35 +66,10 @@ const BlogPostCard = ({ post }) => {
       });
     }
   };
-
-  // Default image if no media is available
-  const defaultImage = "https://your-website.com/default-og-image.jpg";
-  const ogImage = media.length > 0 ? media[0].url : defaultImage;
-  const blogUrl = `${window.location.origin}/blog?id=${id}`;
+  
 
   return (
     <article className="max-w-2xl mx-auto mb-20 font-sans text-[#111]">
-      
-      {/* ✅ Dynamic Open Graph Meta Tags */}
-      <Helmet>
-        <title>{title ? `${title} | Yoga by Nandini` : 'Yoga by Nandini - Blog'}</title>
-
-        {/* Open Graph Meta Tags */}
-        <meta property="og:url" content={blogUrl} />
-        <meta property="og:type" content="article" />
-        <meta property="og:title" content={title || "Yoga by Nandini - Blog"} />
-        <meta property="og:description" content={desc || "Explore yoga, wellness, and mindfulness tips."} />
-        <meta property="og:image" content={ogImage} />
-
-        {/* Twitter Meta Tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:domain" content="nandini-yoga.vercel.app" />
-        <meta name="twitter:url" content={blogUrl} />
-        <meta name="twitter:title" content={title || "Yoga by Nandini - Blog"} />
-        <meta name="twitter:description" content={desc || "Explore yoga, wellness, and mindfulness tips."} />
-        <meta name="twitter:image" content={ogImage} />
-      </Helmet>
-
       {/* Media Carousel */}
       {media.length > 0 && (
         <div 
