@@ -9,16 +9,19 @@ const BlogPostCard = ({ post }) => {
   const startX = useRef(0);
   const isDragging = useRef(false);
 
+  // Handle start of touch or mouse down
   const handleStart = (e) => {
     isDragging.current = true;
     startX.current = e.touches ? e.touches[0].clientX : e.clientX;
   };
 
+  // Handle the movement of touch or mouse drag
   const handleMove = (e) => {
     if (!isDragging.current) return;
     // Optional: add drag effect
   };
 
+  // Handle end of drag or touch event
   const handleEnd = (e) => {
     if (!isDragging.current) return;
     const endX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
@@ -33,28 +36,38 @@ const BlogPostCard = ({ post }) => {
     isDragging.current = false;
   };
 
+  // Move to previous media item
   const handlePrev = () => {
     setCurrentIndex((prev) => (prev === 0 ? media.length - 1 : prev - 1));
   };
 
+  // Move to next media item
   const handleNext = () => {
     setCurrentIndex((prev) => (prev === media.length - 1 ? 0 : prev + 1));
   };
 
+  // Handle share functionality
   const handleShare = () => {
-    const shareUrl = `${window.location.origin}/blog`;
+    // Construct the shareable URL using the updated format: /blog?id=someBlogId
+    const shareUrl = `${window.location.origin}/blog?id=${post.id}`;
+  
     if (navigator.share) {
+      // If the Web Share API is supported, use it to share the content
       navigator.share({
         title: 'Yoga by Nandini – Blog',
-        text: 'Check out the blog posts!',
+        text: 'Check out the blog post!',
         url: shareUrl,
-      }).catch((err) => console.error('Sharing failed:', err));
+      }).catch((error) => console.error('Sharing failed:', error));
     } else {
+      // If Web Share API is not supported, copy the URL to the clipboard
       navigator.clipboard.writeText(shareUrl).then(() => {
         alert('Blog link copied to clipboard!');
+      }).catch((error) => {
+        console.error('Failed to copy to clipboard:', error);
       });
     }
   };
+  
 
   return (
     <article className="max-w-2xl mx-auto mb-20 font-sans text-[#111]">
@@ -96,15 +109,15 @@ const BlogPostCard = ({ post }) => {
             ))}
           </div>
 
-          {/* Dots */}
+          {/* Dots for Navigation */}
           {media.length > 1 && (
             <div className="flex justify-center mt-4 space-x-1">
-            {media.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentIndex(index)}
-                className={`w-2.5 h-2.5 rounded-full transition-all ${
-                  currentIndex === index ? 'bg-[#8B3D6E]' : 'bg-gray-300'
+              {media.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentIndex(index)}
+                  className={`w-2.5 h-2.5 rounded-full transition-all ${
+                    currentIndex === index ? 'bg-[#8B3D6E]' : 'bg-gray-300'
                   }`}
                 ></button>
               ))}
