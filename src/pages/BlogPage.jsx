@@ -5,7 +5,6 @@ import BlogPostCard from '../components/BlogPostCard';
 import { useNavigate, useLocation } from 'react-router-dom';
 import PinModal from '../components/PinModal';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet'; // ✅ Added Helmet
 
 const BlogPage = () => {
   const [posts, setPosts] = useState([]);
@@ -55,116 +54,95 @@ const BlogPage = () => {
     navigate('/admin');
   };
 
-  // ✅ Find active post for meta tags
-  const activePost = blogId ? posts.find((post) => post.id === blogId) : null;
-
   return (
-    <>
-      {/* ✅ Dynamic Open Graph Meta Tags */}
-      <Helmet>
-        <title>{activePost ? `${activePost.title} | Yoga by Nandini` : 'Yoga by Nandini - Blog'}</title>
-        <meta property="og:title" content={activePost ? activePost.title : "Yoga by Nandini - Blog"} />
-        <meta property="og:description" content={activePost ? activePost.description || "Explore yoga, wellness, and mindfulness tips." : "Explore yoga, wellness, and mindfulness tips."} />
-        <meta property="og:image" content={activePost ? activePost.imageUrl || "https://your-website.com/default-og-image.jpg" : "https://your-website.com/default-og-image.jpg"} />
-        <meta property="og:url" content={`https://your-website.com/blog?id=${blogId || ''}`} />
-        <meta property="og:type" content="article" />
+    <motion.div
+      className="min-h-screen bg-[#fffaf5] font-serif text-[#444] px-4 sm:px-6 py-10 sm:py-14"
+      initial={{ opacity: 0, y: -30 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 30 }}
+      transition={{ duration: 0.6, ease: 'easeInOut' }}
+    >
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-10 gap-4 sm:gap-0">
+          <motion.h1
+            className="text-3xl sm:text-4xl font-bold text-[#5e3c58] tracking-wide"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            🌸Blog
+          </motion.h1>
 
-        {/* Twitter Card Tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={activePost ? activePost.title : "Yoga by Nandini - Blog"} />
-        <meta name="twitter:description" content={activePost ? activePost.description || "Explore yoga, wellness, and mindfulness tips." : "Explore yoga, wellness, and mindfulness tips."} />
-        <meta name="twitter:image" content={activePost ? activePost.imageUrl || "https://your-website.com/default-og-image.jpg" : "https://your-website.com/default-og-image.jpg"} />
-      </Helmet>
+          <motion.button
+            onClick={() => setShowPinModal(true)}
+            className="bg-transparent border-2 border-[#a15e7c] text-[#a15e7c] px-6 py-3 rounded-xl shadow-sm hover:bg-[#a15e7c] hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-[#e3c0cf] focus:ring-offset-2"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Upload Post
+          </motion.button>
+        </div>
 
-      <motion.div
-        className="min-h-screen bg-[#fffaf5] font-serif text-[#444] px-4 sm:px-6 py-10 sm:py-14"
-        initial={{ opacity: 0, y: -30 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 30 }}
-        transition={{ duration: 0.6, ease: 'easeInOut' }}
-      >
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-10 gap-4 sm:gap-0">
-            <motion.h1
-              className="text-3xl sm:text-4xl font-bold text-[#5e3c58] tracking-wide"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              🌸Blog
-            </motion.h1>
+        {showPinModal && (
+          <PinModal
+            onSuccess={handlePinSuccess}
+            onClose={() => setShowPinModal(false)}
+          />
+        )}
 
-            <motion.button
-              onClick={() => setShowPinModal(true)}
-              className="bg-transparent border-2 border-[#a15e7c] text-[#a15e7c] px-6 py-3 rounded-xl shadow-sm hover:bg-[#a15e7c] hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-[#e3c0cf] focus:ring-offset-2"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Upload Post
-            </motion.button>
-          </div>
+        <div className="space-y-20">
+          {posts.length > 0 && (
+            <>
+              <motion.div
+                key={0}
+                initial={{ opacity: 0, y: -30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: 'easeInOut' }}
+              >
+                <div id={posts[0].id} className="border-b border-[#e8decf] pb-12 mb-10">
+                  <BlogPostCard post={posts[0]} />
+                </div>
+              </motion.div>
 
-          {showPinModal && (
-            <PinModal
-              onSuccess={handlePinSuccess}
-              onClose={() => setShowPinModal(false)}
-            />
-          )}
-
-          <div className="space-y-20">
-            {posts.length > 0 && (
-              <>
-                <motion.div
-                  key={0}
-                  initial={{ opacity: 0, y: -30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, ease: 'easeInOut' }}
-                >
-                  <div id={posts[0].id} className="border-b border-[#e8decf] pb-12 mb-10">
-                    <BlogPostCard post={posts[0]} />
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  className="space-y-16"
-                  initial="hidden"
-                  animate="visible"
-                  variants={{
-                    hidden: {},
-                    visible: {
-                      transition: {
-                        staggerChildren: 0.15,
-                      },
+              <motion.div
+                className="space-y-16"
+                initial="hidden"
+                animate="visible"
+                variants={{
+                  hidden: {},
+                  visible: {
+                    transition: {
+                      staggerChildren: 0.15,
                     },
-                  }}
-                >
-                  {posts.slice(1).map((post, index) => (
-                    <motion.div
-                      key={index + 1}
-                      variants={{
-                        hidden: { opacity: 0, y: 30 },
-                        visible: { opacity: 1, y: 0 },
-                      }}
-                      transition={{ duration: 0.5, ease: 'easeOut' }}
-                    >
-                      <div id={post.id}>
-                        <BlogPostCard post={post} />
-                      </div>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              </>
-            )}
-          </div>
-
-          {posts.length === 0 && (
-            <div className="text-center text-[#8b6f4c] mt-20 text-lg italic">
-              No blog posts yet. Be the first to upload one!
-            </div>
+                  },
+                }}
+              >
+                {posts.slice(1).map((post, index) => (
+                  <motion.div
+                    key={index + 1}
+                    variants={{
+                      hidden: { opacity: 0, y: 30 },
+                      visible: { opacity: 1, y: 0 },
+                    }}
+                    transition={{ duration: 0.5, ease: 'easeOut' }}
+                  >
+                    <div id={post.id}>
+                      <BlogPostCard post={post} />
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </>
           )}
         </div>
-      </motion.div>
-    </>
+
+        {posts.length === 0 && (
+          <div className="text-center text-[#8b6f4c] mt-20 text-lg italic">
+            No blog posts yet. Be the first to upload one!
+          </div>
+        )}
+      </div>
+    </motion.div>
   );
 };
 

@@ -23,15 +23,13 @@ const App = () => {
       {/* Main Content Area */}
       <main className="flex-grow">
         <AnimatePresence mode="wait" initial={false}>
-          <Routes location={location} key={location.pathname}>
-            <Route path="/" element={<Home />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/blog" element={<BlogPage />} />
-            <Route path="/blog/:id" element={<BlogPage />} />
-            <Route path="/blog/:blogId" element={<BlogPage />} />
-
-            <Route path="/admin" element={<AdminPage />} />
-          </Routes>
+        <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<Home />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/blog" element={<BlogPage />} />
+        <Route path="/blog/:id" element={<BlogPage />} /> {/* This handles individual blog posts */}
+        <Route path="/admin" element={<AdminPage />} />
+        </Routes>
         </AnimatePresence>
       </main>
 
