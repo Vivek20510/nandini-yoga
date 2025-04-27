@@ -27,7 +27,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/blog" element={<BlogPage />} />
-        <Route path="/blog/:id" element={<BlogPage />} /> {/* This handles individual blog posts */}
+        <Route path="/blog/:id" element={<BlogPage />} />
         <Route path="/admin" element={<AdminPage />} />
         </Routes>
         </AnimatePresence>
