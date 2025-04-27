@@ -65,14 +65,18 @@ const BlogPostCard = ({ post }) => {
       {/* ✅ Dynamic Open Graph Meta Tags */}
       <Helmet>
         <title>{title ? `${title} | Yoga by Nandini` : 'Yoga by Nandini - Blog'}</title>
+
+        {/* Open Graph Meta Tags */}
+        <meta property="og:url" content={blogUrl} />
+        <meta property="og:type" content="article" />
         <meta property="og:title" content={title || "Yoga by Nandini - Blog"} />
         <meta property="og:description" content={desc || "Explore yoga, wellness, and mindfulness tips."} />
         <meta property="og:image" content={ogImage} />
-        <meta property="og:url" content={blogUrl} />
-        <meta property="og:type" content="article" />
 
-        {/* Twitter Card Tags */}
+        {/* Twitter Meta Tags */}
         <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:domain" content="nandini-yoga.vercel.app" />
+        <meta name="twitter:url" content={blogUrl} />
         <meta name="twitter:title" content={title || "Yoga by Nandini - Blog"} />
         <meta name="twitter:description" content={desc || "Explore yoga, wellness, and mindfulness tips."} />
         <meta name="twitter:image" content={ogImage} />
