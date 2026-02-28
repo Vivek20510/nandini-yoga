@@ -119,11 +119,11 @@ const Contact = () => {
           <div className="space-y-5 text-gray-600 text-sm sm:text-base">
             <div className="flex items-center gap-3">
               <MessageSquare size={18} />
-              info@yogabynandini.com
+              yoga.nandinisingh@gmail.com
             </div>
             <div className="flex items-center gap-3">
               <Phone size={18} />
-              +91 98765 43210
+              +91 9340885284
             </div>
           </div>
         </div>
