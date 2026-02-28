@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import emailjs from "emailjs-com";
 import { motion } from "framer-motion";
 import { MessageSquare, Phone } from "lucide-react"; // Lucide icons
+import { Link } from "react-router-dom";
 
 const Contact = () => {
   const form = useRef();
@@ -47,135 +48,175 @@ const Contact = () => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 100 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className="min-h-screen bg-gradient-to-b from-[#FFF5F0] to-[#F9E2C4] text-[#6B4F4F] font-serif px-4 py-12 sm:px-6 text-center"
-    >
-      <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-[#1D3C52]">Contact Us</h2>
-      <p className="mb-8 text-md sm:text-lg text-[#7a5c5c] italic">
-        We welcome your inquiries and collaboration opportunities. Whether you’re seeking details
-        about our offerings or wish to discuss a potential partnership, feel free to reach out — we’re here to assist you.
-      </p>
+          <motion.div
+  initial={{ opacity: 0, y: 40 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.6 }}
+  className="min-h-screen bg-white px-5 sm:px-8 md:px-16 lg:px-24 py-16 sm:py-20"
+>
+  <div className="max-w-6xl mx-auto">
 
-      {submitted ? (
-        <p className="text-xl text-green-700">Your message has been infused with peace 🌸</p>
-      ) : (
+    {/* Heading */}
+    <div className="text-center mb-12 sm:mb-16">
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-900">
+        Let’s Connect
+      </h2>
+      <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto leading-relaxed">
+        Whether you're interested in personal sessions, workshops,
+        collaborations, or simply have a question —
+        we’d love to hear from you.
+      </p>
+    </div>
+
+    {submitted ? (
+  <div className="text-center py-16 sm:py-20">
+
+    <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold text-[#1D3C52]">
+      Thank you for reaching out 🌿
+    </h3>
+
+    <p className="mt-4 text-gray-600 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+      Your message has been received. We’ll get back to you soon.
+      In the meantime, feel free to explore more about our programs
+      and wellness insights.
+    </p>
+
+    {/* Action Buttons */}
+    <div className="mt-10 flex flex-col sm:flex-row justify-center items-center gap-4">
+
+      <Link
+        to="/"
+        className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#1D3C52] text-white text-sm sm:text-base font-medium hover:bg-[#163042] transition shadow-sm"
+      >
+        Return to Home
+      </Link>
+
+      <Link
+        to="/blog"
+        className="w-full sm:w-auto px-6 py-3 rounded-xl border border-gray-300 text-gray-700 text-sm sm:text-base font-medium hover:bg-gray-100 transition"
+      >
+        Explore the Blog
+      </Link>
+
+    </div>
+
+  </div>
+) : (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+
+        {/* LEFT INFO SECTION */}
+        <div className="space-y-8 order-2 lg:order-1">
+          <div>
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
+              Contact Information
+            </h3>
+            <p className="mt-3 text-sm sm:text-base text-gray-600 leading-relaxed">
+              Reach out for personal yoga sessions, corporate wellness
+              programs, or event collaborations.
+            </p>
+          </div>
+
+          <div className="space-y-5 text-gray-600 text-sm sm:text-base">
+            <div className="flex items-center gap-3">
+              <MessageSquare size={18} />
+              info@yogabynandini.com
+            </div>
+            <div className="flex items-center gap-3">
+              <Phone size={18} />
+              +91 98765 43210
+            </div>
+          </div>
+        </div>
+
+        {/* FORM SECTION */}
         <form
           ref={form}
           onSubmit={sendEmail}
-          className="max-w-xl mx-auto bg-white p-6 sm:p-8 rounded-lg shadow-md text-left"
+          className="bg-gray-50 p-6 sm:p-8 rounded-2xl border border-gray-100 shadow-sm space-y-6 order-1 lg:order-2"
         >
-          <div className="space-y-4">
-            <div>
-              <label className="block mb-2 font-medium text-[#1D3C52]">Your Name *</label>
-              <input
-                type="text"
-                name="name"
-                placeholder="Your Name"
-                required
-                className="w-full p-3 border border-[#E0D3D0] rounded focus:ring-2 focus:ring-[#F26B38]"
-              />
-            </div>
-
-            <div>
-              <label className="block mb-2 font-medium text-[#1D3C52]">Your Email *</label>
-              <input
-                type="email"
-                name="email"
-                placeholder="Your Email"
-                required
-                className="w-full p-3 border border-[#E0D3D0] rounded focus:ring-2 focus:ring-[#F26B38]"
-              />
-            </div>
-
-            <div>
-              <label className="block mb-2 font-medium text-[#1D3C52]">Subject / Reason *</label>
-              <select
-                name="subject"
-                value={reason}
-                onChange={(e) => {
-                  const selected = e.target.value;
-                  setReason(selected);
-                  setMessage(messageSuggestions[selected] || "");
-                }}
-                required
-                className="w-full p-3 border border-[#E0D3D0] rounded focus:ring-2 focus:ring-[#F26B38]"
-              >
-                {Object.keys(messageSuggestions).map((key) => (
-                  <option key={key}>{key}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block mb-2 font-medium text-[#1D3C52]">Mobile Number (optional)</label>
-              <input
-                type="tel"
-                name="mobile"
-                placeholder="Your Mobile Number"
-                className="w-full p-3 border border-[#E0D3D0] rounded focus:ring-2 focus:ring-[#F26B38]"
-              />
-            </div>
-
-            <div>
-              <label className="block mb-2 font-medium text-[#1D3C52]">Message (optional)</label>
-              <textarea
-                name="message"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                rows="5"
-                className="w-full p-3 border border-[#E0D3D0] rounded focus:ring-2 focus:ring-[#F26B38]"
-              />
-            </div>
-
-            {error && (
-              <p className="text-red-500 text-sm mb-4">{error}</p>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className={`w-full px-6 py-3 sm:px-8 sm:py-4 rounded-full font-semibold text-white text-base sm:text-lg shadow-lg transition-all duration-300 ease-in-out 
-                ${loading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-gradient-to-r from-[#F26B38] to-[#F9E2C4] hover:from-[#F9E2C4] hover:to-[#F26B38] hover:shadow-xl"
-                } focus:outline-none focus:ring-4 focus:ring-[#F26B38]/50`}
-              aria-label="Send with Grace"
-            >
-              {loading ? (
-                <span className="flex items-center justify-center space-x-2">
-                  <svg
-                    className="animate-spin h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8v8H4z"
-                    ></path>
-                  </svg>
-                  <span>Sending...</span>
-                </span>
-              ) : (
-                "Send with Grace"
-              )}
-            </button>
+          {/* Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Your Name *
+            </label>
+            <input
+              type="text"
+              name="name"
+              required
+              className="w-full px-4 py-3 sm:py-3.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#1D3C52] transition"
+            />
           </div>
+
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Your Email *
+            </label>
+            <input
+              type="email"
+              name="email"
+              required
+              className="w-full px-4 py-3 sm:py-3.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#1D3C52] transition"
+            />
+          </div>
+
+          {/* Subject */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Subject
+            </label>
+            <select
+              name="subject"
+              value={reason}
+              onChange={(e) => {
+                const selected = e.target.value;
+                setReason(selected);
+                setMessage(messageSuggestions[selected] || "");
+              }}
+              className="w-full px-4 py-3 sm:py-3.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#1D3C52] transition"
+            >
+              {Object.keys(messageSuggestions).map((key) => (
+                <option key={key}>{key}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Message */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Message
+            </label>
+            <textarea
+              name="message"
+              rows="4"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#1D3C52] transition"
+            />
+          </div>
+
+          {error && (
+            <p className="text-red-500 text-sm">{error}</p>
+          )}
+
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-3 sm:py-3.5 rounded-xl font-medium text-white text-sm sm:text-base transition ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-[#1D3C52] hover:bg-[#163042]"
+            }`}
+          >
+            {loading ? "Sending..." : "Send Message"}
+          </button>
         </form>
-      )}
-    </motion.div>
+
+      </div>
+    )}
+  </div>
+</motion.div>
   );
 };
 
