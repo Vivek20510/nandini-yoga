@@ -5,6 +5,7 @@ import BlogPostCard from '../components/BlogPostCard';
 import { useNavigate, useLocation } from 'react-router-dom';
 import PinModal from '../components/PinModal';
 import { motion } from 'framer-motion';
+import { PlusCircle, FileText } from 'lucide-react'; // Import Lucide icons
 
 const BlogPage = () => {
   const [posts, setPosts] = useState([]);
@@ -70,7 +71,7 @@ const BlogPage = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
           >
-            🌸Blog
+            <FileText className="inline-block mr-2" size={32} /> 🌸Nandini's Blog
           </motion.h1>
 
           <motion.button
@@ -79,6 +80,7 @@ const BlogPage = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
+            <PlusCircle className="inline-block mr-2" size={24} />
             Upload Post
           </motion.button>
         </div>
