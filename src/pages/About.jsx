@@ -27,7 +27,7 @@ const About = () => {
         <div className="max-w-3xl mx-auto text-center mb-20">
           <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
             Nandini Singh is a <strong>globally certified yoga teacher</strong> 
-            with over 15 years of experience. Her sessions blend ancient yogic
+             with over 15 years of experience. Her sessions blend ancient yogic
             wisdom with modern mindfulness practices — creating a space where
             students experience strength, balance, and inner clarity.
           </p>
