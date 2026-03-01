@@ -57,94 +57,82 @@ const BlogPage = () => {
 
   return (
     <motion.div
-      className="min-h-screen bg-[#fffaf5] font-serif text-[#444] px-4 sm:px-6 py-10 sm:py-14"
-      initial={{ opacity: 0, y: -30 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 30 }}
-      transition={{ duration: 0.6, ease: 'easeInOut' }}
-    >
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-10 gap-4 sm:gap-0">
-          <motion.h1
-            className="text-3xl sm:text-4xl font-bold text-[#5e3c58] tracking-wide"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <FileText className="inline-block mr-2" size={32} /> 🌸Nandini's Blog
-          </motion.h1>
+        className="min-h-screen bg-white px-6 sm:px-10 md:px-16 lg:px-24 py-16"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <div className="max-w-7xl mx-auto">
 
-          <motion.button
-            onClick={() => setShowPinModal(true)}
-            className="bg-transparent border-2 border-[#a15e7c] text-[#a15e7c] px-6 py-3 rounded-xl shadow-sm hover:bg-[#a15e7c] hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-[#e3c0cf] focus:ring-offset-2"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <PlusCircle className="inline-block mr-2" size={24} />
-            Upload Post
-          </motion.button>
-        </div>
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-16 gap-6">
 
-        {showPinModal && (
-          <PinModal
-            onSuccess={handlePinSuccess}
-            onClose={() => setShowPinModal(false)}
-          />
-        )}
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-semibold text-gray-900">
+                Wellness Journal
+              </h1>
+              <p className="mt-3 text-gray-600 text-sm sm:text-base max-w-xl">
+                Insights, reflections, and mindful practices to guide your
+                journey toward balance and clarity.
+              </p>
+            </div>
 
-        <div className="space-y-20">
-          {posts.length > 0 && (
+            <button
+              onClick={() => setShowPinModal(true)}
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-100 transition"
+            >
+              <PlusCircle size={18} />
+              Upload Post
+            </button>
+
+          </div>
+
+          {showPinModal && (
+            <PinModal
+              onSuccess={handlePinSuccess}
+              onClose={() => setShowPinModal(false)}
+            />
+          )}
+
+          {/* If Posts Exist */}
+          {posts.length > 0 ? (
             <>
-              <motion.div
-                key={0}
-                initial={{ opacity: 0, y: -30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: 'easeInOut' }}
-              >
-                <div id={posts[0].id} className="border-b border-[#e8decf] pb-12 mb-10">
-                  <BlogPostCard post={posts[0]} />
+              {/* Featured Post */}
+              <div className="mb-20">
+                <div id={posts[0].id}>
+                  <BlogPostCard post={posts[0]} featured />
                 </div>
-              </motion.div>
+              </div>
 
-              <motion.div
-                className="space-y-16"
-                initial="hidden"
-                animate="visible"
-                variants={{
-                  hidden: {},
-                  visible: {
-                    transition: {
-                      staggerChildren: 0.15,
-                    },
-                  },
-                }}
-              >
-                {posts.slice(1).map((post, index) => (
-                  <motion.div
-                    key={index + 1}
-                    variants={{
-                      hidden: { opacity: 0, y: 30 },
-                      visible: { opacity: 1, y: 0 },
-                    }}
-                    transition={{ duration: 0.5, ease: 'easeOut' }}
-                  >
-                    <div id={post.id}>
+              {/* Remaining Posts Grid */}
+              {posts.length > 1 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                  {posts.slice(1).map((post) => (
+                    <div key={post.id} id={post.id}>
                       <BlogPostCard post={post} />
                     </div>
-                  </motion.div>
-                ))}
-              </motion.div>
+                  ))}
+                </div>
+              )}
             </>
+          ) : (
+            /* Empty State */
+            <div className="text-center py-24">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-6">
+                <FileText className="text-gray-400" size={24} />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-800">
+                No posts yet
+              </h3>
+              <p className="mt-3 text-gray-500 text-sm">
+                Your wellness insights will appear here once published.
+              </p>
+            </div>
           )}
-        </div>
 
-        {posts.length === 0 && (
-          <div className="text-center text-[#8b6f4c] mt-20 text-lg italic">
-            No blog posts yet. Be the first to upload one!
-          </div>
-        )}
-      </div>
-    </motion.div>
+        </div>
+      </motion.div>
   );
 };
 
