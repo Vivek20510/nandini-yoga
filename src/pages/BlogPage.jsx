@@ -116,7 +116,7 @@ const BlogPage = () => {
 
       {/* ═══ HERO HEADER ═══ */}
       <section className="bg-[#F4F1E6] pt-20 pb-16 border-b border-[#E8E4D8]">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
+        {/* <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20"> */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8">
 
             <div>
@@ -152,7 +152,7 @@ const BlogPage = () => {
             </div>
 
             {/* Upload button — admin only, hidden in plain sight */}
-            <motion.button
+            {/* <motion.button
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.4 }}
@@ -163,7 +163,7 @@ const BlogPage = () => {
               <PlusCircle size={15} />
               New Post
             </motion.button>
-          </div>
+          </div> */}
 
           {/* Category filter pills */}
           {categories.length > 1 && (

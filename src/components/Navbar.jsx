@@ -6,6 +6,7 @@ import { Menu, X } from "lucide-react";
 const navItems = [
   { name: "Home", path: "/" },
   { name: "About", path: "/about" },
+  { name: "Gallery", path: "/gallery" },
   { name: "Blog", path: "/blog" },
   { name: "Contact", path: "/contact" },
 ];
@@ -28,13 +29,13 @@ const Navbar = () => {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        className={`relative fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
             ? "bg-[#FAFAF7]/95 backdrop-blur-md shadow-[0_1px_30px_rgba(29,60,82,0.08)]"
             : "bg-transparent"
         }`}
       >
-        <nav className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 py-5 flex justify-between items-center">
+        <nav className="relative max-w-7xl mx-auto px-6 md:px-12 lg:px-20 py-5 flex justify-between items-center">
 
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
@@ -167,7 +168,7 @@ const Navbar = () => {
       </header>
 
       {/* Spacer for fixed navbar */}
-      <div className="h-[72px]" />
+      {/* <div className="h-[72px]" /> */}
     </>
   );
 };

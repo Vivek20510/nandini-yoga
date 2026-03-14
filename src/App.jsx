@@ -10,6 +10,8 @@ import BlogPage from "./pages/BlogPage";
 import AdminPage from "./pages/AdminPage";
 import About from "./pages/About";
 import BlogDetailPage from "./pages/BlogDetailPage";
+import GalleryPage from "./pages/GalleryPage";
+import NotFound from "./pages/NotFound";
 
 const App = () => {
   const location = useLocation();
@@ -27,7 +29,6 @@ const App = () => {
             </MainLayout>
           }
         />
-
         <Route
           path="/about"
           element={
@@ -64,8 +65,27 @@ const App = () => {
           }
         />
 
+        <Route
+          path="/gallery"
+          element={
+            <MainLayout>
+              <GalleryPage />
+            </MainLayout>
+          }
+        />
+
         {/* Admin WITHOUT Main Layout */}
         <Route path="/admin" element={<AdminPage />} />
+
+        {/* 404 Catch-all */}
+        <Route
+          path="*"
+          element={
+            <MainLayout>
+              <NotFound />
+            </MainLayout>
+          }
+        />
 
       </Routes>
     </AnimatePresence>
