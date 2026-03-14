@@ -5,8 +5,9 @@ import {
   getDocs, updateDoc, deleteDoc, doc,
 } from "firebase/firestore";
 import { CheckCircle, XCircle, Edit, Trash2, Star, Lock, Loader2, RefreshCw } from "lucide-react";
+import TestimonialAvatarManage from "./TestimonialAvatarManage";
 
-const ADMIN_PIN = "1212";
+const ADMIN_PIN = import.meta.env.VITE_ADMIN_PIN;
 
 /* ─────────────────────────────────────────────
    Inline PIN Modal (no external dependency)
@@ -353,6 +354,9 @@ const TestimonialsManage = () => {
 
   return (
     <div className="p-6 max-w-4xl">
+      <div className="mb-8">
+        <TestimonialAvatarManage />
+      </div>
 
       {/* ── Header ── */}
       <div className="flex items-center justify-between mb-6">

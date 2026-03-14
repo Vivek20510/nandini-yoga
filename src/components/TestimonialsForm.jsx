@@ -1,24 +1,13 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { Star, CheckCircle, AlertCircle, X, RefreshCw, Camera, Sparkles } from "lucide-react";
 import { db } from "../firebase";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { collection, addDoc, Timestamp, getDocs, orderBy, query } from "firebase/firestore";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 
-/* ─────────────────────────────────────────
-   3D Avatar — local PNGs
-───────────────────────────────────────── */
-const AVATARS = [
-  "/src/assets/avatars/avatar-1.png",
-  "/src/assets/avatars/avatar-2.png",
-  "/src/assets/avatars/avatar-3.png",
-  "/src/assets/avatars/avatar-4.png",
-  "/src/assets/avatars/avatar-5.png",
-  "/src/assets/avatars/avatar-6.png",
-];
-
-const randomAvatar = (exclude = null) => {
-  const pool = exclude ? AVATARS.filter((a) => a !== exclude) : AVATARS;
+const randomAvatar = (avatars, excludeId = null) => {
+  const pool = excludeId ? avatars.filter((avatar) => avatar.id !== excludeId) : avatars;
+  if (!pool.length) return null;
   return pool[Math.floor(Math.random() * pool.length)];
 };
 
@@ -126,7 +115,9 @@ const TestimonialsForm = () => {
   const [formData, setFormData] = useState({
     name: "", role: "", email: "", text: "", rating: 5, image: null,
   });
-  const [currentAvatar, setCurrentAvatar] = useState(() => randomAvatar());
+  const [avatars, setAvatars] = useState([]);
+  const [avatarsLoading, setAvatarsLoading] = useState(true);
+  const [currentAvatar, setCurrentAvatar] = useState(null);
   const [imagePreview,  setImagePreview]  = useState(null);
   const [loading,       setLoading]       = useState(false);
   const [submitted,     setSubmitted]     = useState(false);
@@ -135,17 +126,58 @@ const TestimonialsForm = () => {
   const [dragOver,      setDragOver]      = useState(false);
   const fileRef = useRef();
 
-  const displayAvatar = imagePreview || currentAvatar;
+  const displayAvatar = imagePreview || currentAvatar?.imageUrl || null;
   const words = wordCount(formData.text);
   const overLimit = words > MAX_WORDS;
+  const avatarSelectionRequired = !imagePreview && !formData.image && !currentAvatar;
+
+  useEffect(() => {
+    let active = true;
+
+    const loadAvatars = async () => {
+      setAvatarsLoading(true);
+      try {
+        const snap = await getDocs(
+          query(collection(db, "testimonialAvatars"), orderBy("sortOrder", "asc"))
+        );
+        if (!active) return;
+
+        const liveAvatars = snap.docs
+          .map((avatarDoc) => ({ id: avatarDoc.id, ...avatarDoc.data() }))
+          .filter((avatar) => avatar.isActive !== false && avatar.imageUrl);
+
+        setAvatars(liveAvatars);
+        setError(null);
+        setCurrentAvatar((prev) => {
+          if (prev && liveAvatars.some((avatar) => avatar.id === prev.id)) return prev;
+          return randomAvatar(liveAvatars);
+        });
+      } catch (err) {
+        console.error(err);
+        if (active) {
+          setAvatars([]);
+          setCurrentAvatar(null);
+          setError("Default avatars are unavailable right now. Please upload your photo instead.");
+        }
+      } finally {
+        if (active) setAvatarsLoading(false);
+      }
+    };
+
+    loadAvatars();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   /* ── Shuffle ── */
   const shuffleAvatar = useCallback(() => {
-    if (imagePreview) return;
+    if (imagePreview || avatars.length < 2) return;
+    setError(null);
     setIsShuffling(true);
-    setCurrentAvatar((prev) => randomAvatar(prev));
+    setCurrentAvatar((prev) => randomAvatar(avatars, prev?.id));
     setTimeout(() => setIsShuffling(false), 500);
-  }, [imagePreview]);
+  }, [imagePreview, avatars]);
 
   /* ── Input ── */
   const handleInput = (e) => {
@@ -161,6 +193,7 @@ const TestimonialsForm = () => {
   /* ── File handling ── */
   const processFile = (file) => {
     if (!file || !file.type.startsWith("image/")) return;
+    setError(null);
     setFormData((p) => ({ ...p, image: file }));
     const r = new FileReader();
     r.onload = () => setImagePreview(r.result);
@@ -170,6 +203,7 @@ const TestimonialsForm = () => {
   const clearImage = () => {
     setFormData((p) => ({ ...p, image: null }));
     setImagePreview(null);
+    setError(null);
     if (fileRef.current) fileRef.current.value = "";
   };
 
@@ -188,6 +222,10 @@ const TestimonialsForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (overLimit) return;
+    if (avatarSelectionRequired) {
+      setError("Please upload your photo until an admin adds default avatars.");
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -197,11 +235,8 @@ const TestimonialsForm = () => {
         // User uploaded their own photo → upload to Cloudinary
         imageUrl = await uploadToCloudinary(formData.image);
       } else {
-        // No photo → fetch the local 3D avatar PNG as a blob → upload to Cloudinary
-        const response = await fetch(currentAvatar);
-        const blob     = await response.blob();
-        const file     = new File([blob], "avatar.png", { type: "image/png" });
-        imageUrl       = await uploadToCloudinary(file);
+        // Default avatar → keep the managed Cloudinary image URL
+        imageUrl = currentAvatar?.imageUrl;
       }
 
       await addDoc(collection(db, "testimonials"), {
@@ -229,8 +264,9 @@ const TestimonialsForm = () => {
     setSubmitted(false);
     setFormData({ name: "", role: "", email: "", text: "", rating: 5, image: null });
     setImagePreview(null);
-    setCurrentAvatar(randomAvatar());
+    setCurrentAvatar(randomAvatar(avatars));
     setError(null);
+    if (fileRef.current) fileRef.current.value = "";
   };
 
   /* ══════════════════════════════════════
@@ -347,6 +383,23 @@ const TestimonialsForm = () => {
       background: transparent;
       border-color: rgba(201,168,76,0.4);
       object-position: center center;
+    }
+    .tf2-avatar-placeholder {
+      width: 150px; height: 150px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(201,168,76,0.18), transparent 45%),
+        linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03));
+      border: 2px dashed rgba(255,255,255,0.18);
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      padding: 18px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      line-height: 1.5;
+      position: relative; z-index: 2;
     }
 
     .tf2-avatar-del {
@@ -625,6 +678,7 @@ const TestimonialsForm = () => {
       .tf2-orbit-ring { display: none; }
       .tf2-glow-ring  { display: none; }
       .tf2-avatar-img { width: 86px; height: 86px; box-shadow: none; }
+      .tf2-avatar-placeholder { width: 86px; height: 86px; font-size: 7px; padding: 10px; }
       .tf2-left-title { font-size: 22px; text-align: left; }
       .tf2-left-sub   { display: none; }
       .tf2-hairline   { display: none; }
@@ -650,6 +704,7 @@ const TestimonialsForm = () => {
       .tf2-h2 { font-size: 20px; }
       .tf2-avatar-cluster { width: 68px; height: 68px; }
       .tf2-avatar-img { width: 68px; height: 68px; }
+      .tf2-avatar-placeholder { width: 68px; height: 68px; font-size: 6px; padding: 8px; }
       .tf2-left-title { font-size: 18px; }
       .tf2-success-right { padding: 40px 20px; }
       .tf2-success-h { font-size: 24px; }
@@ -671,8 +726,12 @@ const TestimonialsForm = () => {
               <MandalaRings />
               <div className="tf2-orbit-ring" />
               <div className="tf2-glow-ring" />
-              <img src={displayAvatar} alt=""
-                className={`tf2-avatar-img ${imagePreview ? "is-photo" : ""}`} />
+              {displayAvatar ? (
+                <img src={displayAvatar} alt=""
+                  className={`tf2-avatar-img ${imagePreview ? "is-photo" : ""}`} />
+              ) : (
+                <div className="tf2-avatar-placeholder">Upload photo</div>
+              )}
             </div>
             <div className="tf2-left-title">Thank you,<br/><em>sincerely.</em></div>
           </div>
@@ -722,16 +781,28 @@ const TestimonialsForm = () => {
               <div className="tf2-orbit-ring" />
               <div className="tf2-glow-ring" />
               <AnimatePresence mode="wait">
-                <motion.img
-                  key={displayAvatar}
-                  src={displayAvatar}
-                  alt="Your avatar"
-                  className={`tf2-avatar-img ${imagePreview ? "is-photo" : ""}`}
-                  initial={{ opacity: 0, scale: 0.75, rotate: -8 }}
-                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                  exit={{ opacity: 0, scale: 1.1, rotate: 8 }}
-                  transition={{ duration: 0.38, ease: [0.22,1,0.36,1] }}
-                />
+                {displayAvatar ? (
+                  <motion.img
+                    key={displayAvatar}
+                    src={displayAvatar}
+                    alt="Your avatar"
+                    className={`tf2-avatar-img ${imagePreview ? "is-photo" : ""}`}
+                    initial={{ opacity: 0, scale: 0.75, rotate: -8 }}
+                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                    exit={{ opacity: 0, scale: 1.1, rotate: 8 }}
+                    transition={{ duration: 0.38, ease: [0.22,1,0.36,1] }}
+                  />
+                ) : (
+                  <motion.div
+                    key="avatar-placeholder"
+                    className="tf2-avatar-placeholder"
+                    initial={{ opacity: 0, scale: 0.85 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    {avatarsLoading ? "Loading..." : "Upload photo"}
+                  </motion.div>
+                )}
               </AnimatePresence>
               {imagePreview && (
                 <button className="tf2-avatar-del" type="button" onClick={clearImage} aria-label="Remove">
@@ -741,20 +812,23 @@ const TestimonialsForm = () => {
             </div>
 
             {/* Dot pickers */}
-            {!imagePreview && (
+            {!imagePreview && avatars.length > 0 && (
               <div className="tf2-avatar-dots">
-                {AVATARS.map((av, i) => (
+                {avatars.map((av, i) => (
                   <button key={i} type="button"
-                    className={`tf2-avatar-dot ${av === currentAvatar ? "active" : ""}`}
-                    onClick={() => setCurrentAvatar(av)}
-                    aria-label={`Avatar ${i + 1}`}
+                    className={`tf2-avatar-dot ${av.id === currentAvatar?.id ? "active" : ""}`}
+                    onClick={() => {
+                      setError(null);
+                      setCurrentAvatar(av);
+                    }}
+                    aria-label={av.alt || `Avatar ${i + 1}`}
                   />
                 ))}
               </div>
             )}
 
             {/* Shuffle */}
-            {!imagePreview && (
+            {!imagePreview && avatars.length > 0 && (
               <motion.button className="tf2-shuffle" type="button"
                 onClick={shuffleAvatar} whileTap={{ scale: 0.94 }}
               >
@@ -773,6 +847,12 @@ const TestimonialsForm = () => {
             <div className="tf2-left-title">Share your <em>story.</em></div>
             <p className="tf2-left-sub">Your words inspire others to begin their own wellness journey with Nandini.</p>
             <div className="tf2-hairline" />
+
+            {!avatarsLoading && avatars.length === 0 && !imagePreview && (
+              <p className="tf2-left-sub" style={{ display: "block", maxWidth: 240 }}>
+                Default avatars are not configured yet. Please upload your photo to continue.
+              </p>
+            )}
 
             {/* Upload */}
             <input ref={fileRef} type="file" accept="image/*"
@@ -858,12 +938,14 @@ const TestimonialsForm = () => {
               )}
             </AnimatePresence>
 
-            <button type="submit" disabled={loading || overLimit} className="tf2-btn">
+            <button type="submit" disabled={loading || overLimit || avatarSelectionRequired} className="tf2-btn">
               {loading
                 ? <><div className="tf2-spinner" /> Submitting…</>
                 : overLimit
                   ? `${words - MAX_WORDS} words over limit`
-                  : "Submit Testimonial"
+                  : avatarSelectionRequired
+                    ? "Upload your photo to continue"
+                    : "Submit Testimonial"
               }
             </button>
 
