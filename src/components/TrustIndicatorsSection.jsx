@@ -1,15 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { Award, Users, Heart, Zap } from "lucide-react";
-import { useRef } from "react";
 
-const CountUp = ({ end, duration = 2, prefix = "", suffix = "" }) => {
+const CountUp = ({ end, duration = 2, prefix = "", suffix = "", start = false }) => {
   const [count, setCount] = useState(0);
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const hasAnimatedRef = useRef(false);
 
   useEffect(() => {
-    if (!isInView) return;
+    if (!start || hasAnimatedRef.current) return;
+
+    hasAnimatedRef.current = true;
+
+    if (end === 0) {
+      setCount(0);
+      return;
+    }
 
     let startTime = Date.now();
     const timer = setInterval(() => {
@@ -24,10 +29,10 @@ const CountUp = ({ end, duration = 2, prefix = "", suffix = "" }) => {
     }, 30);
 
     return () => clearInterval(timer);
-  }, [isInView, end, duration]);
+  }, [start, end, duration]);
 
   return (
-    <span ref={ref}>
+    <span>
       {prefix}
       {count.toLocaleString()}
       {suffix}
@@ -36,6 +41,12 @@ const CountUp = ({ end, duration = 2, prefix = "", suffix = "" }) => {
 };
 
 const TrustIndicatorSection = () => {
+  const sectionRef = useRef(null);
+  const sectionInView = useInView(sectionRef, {
+    once: true,
+    amount: 0.2,
+  });
+
   const stats = [
     {
       id: 1,
@@ -92,7 +103,10 @@ const TrustIndicatorSection = () => {
   };
 
   return (
-    <section className="py-24 bg-gradient-to-r from-[#1D3C52] to-[#2A5470]">
+    <section
+      ref={sectionRef}
+      className="py-24 bg-gradient-to-r from-[#1D3C52] to-[#2A5470]"
+    >
       <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
         {/* Decorative background elements */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-[#8BA5B5]/10 to-transparent rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
@@ -159,6 +173,7 @@ const TrustIndicatorSection = () => {
                             end={stat.value}
                             suffix={stat.suffix}
                             duration={2.5}
+                            start={sectionInView}
                           />
                         </p>
                       </div>
