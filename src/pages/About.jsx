@@ -1,6 +1,8 @@
 import React, { useRef } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll } from "framer-motion";
+import SEO from "../components/SEO";
+import { PERSON_NAME, SITE_IMAGE, SITE_NAME, SITE_URL } from "../lib/site";
 
 /* ── ANIMATION VARIANTS ── */
 const fadeUp = {
@@ -46,11 +48,32 @@ const CERTIFICATIONS = [
 
 const About = () => {
   const heroRef = useRef(null);
-  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
-  const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
+  useScroll({ target: heroRef, offset: ["start start", "end start"] });
+  const aboutDescription =
+    "Learn about Nandini Singh, a certified yoga and meditation teacher with 15+ years of experience in Hatha yoga, pranayama, Ayurveda, and mindful living guidance.";
+
+  const aboutSchema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: PERSON_NAME,
+    image: SITE_IMAGE,
+    url: `${SITE_URL}/about`,
+    jobTitle: "Yoga and Meditation Teacher",
+    worksFor: {
+      "@type": "Organization",
+      name: SITE_NAME,
+    },
+    description: aboutDescription,
+  };
 
   return (
     <>
+      <SEO
+        title="About Nandini Singh"
+        description={aboutDescription}
+        canonicalPath="/about"
+        schema={aboutSchema}
+      />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@300;400;500&display=swap');
 

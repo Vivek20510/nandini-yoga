@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Phone, ArrowRight, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import TestimonialsForm from "../components/TestimonialsForm";
+import SEO from "../components/SEO";
+import { PERSON_NAME, SITE_NAME, SITE_URL } from "../lib/site";
 
 /* ── DATA ── */
 const MESSAGE_SUGGESTIONS = {
@@ -37,6 +39,22 @@ const Contact = () => {
   const [error,     setError]     = useState(null);
   const [reason,    setReason]    = useState("General Enquiry");
   const [message,   setMessage]   = useState(MESSAGE_SUGGESTIONS["General Enquiry"]);
+  const contactDescription =
+    "Contact Yoga By Nandini for online yoga classes, private sessions, meditation guidance, pranayama support, retreats, and wellness collaborations.";
+
+  const contactSchema = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    name: `Contact ${SITE_NAME}`,
+    url: `${SITE_URL}/contact`,
+    description: contactDescription,
+    mainEntity: {
+      "@type": "Person",
+      name: PERSON_NAME,
+      telephone: "+91 9340885284",
+      email: "yoga.nandinisingh@gmail.com",
+    },
+  };
 
   const sendEmail = (e) => {
     e.preventDefault();
@@ -57,6 +75,12 @@ const Contact = () => {
 
   return (
     <>
+      <SEO
+        title="Contact for Online Yoga Classes and Meditation"
+        description={contactDescription}
+        canonicalPath="/contact"
+        schema={contactSchema}
+      />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@300;400;500&display=swap');
 

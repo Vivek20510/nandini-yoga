@@ -5,7 +5,9 @@ import BlogPostCard from '../components/BlogPostCard';
 import { useNavigate, useLocation } from 'react-router-dom';
 import PinModal from '../components/PinModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PlusCircle, BookOpen } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
+import SEO from '../components/SEO';
+import { SITE_URL } from '../lib/site';
 
 /* ─────────── FADE-UP HELPER ─────────── */
 const FadeUp = ({ children, delay = 0, className = "" }) => (
@@ -56,6 +58,16 @@ const BlogPage = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const navigate = useNavigate();
   const location = useLocation();
+  const blogDescription =
+    "Read yoga, meditation, pranayama, Ayurveda, and mindful living articles from Yoga By Nandini. Practical guidance for building a calmer, stronger daily practice.";
+
+  const blogSchema = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    name: "Yoga By Nandini Blog",
+    url: `${SITE_URL}/blog`,
+    description: blogDescription,
+  };
 
   // Derive unique categories from posts
   const categories = ["All", ...Array.from(new Set(posts.map(p => p.category).filter(Boolean)))];
@@ -113,6 +125,12 @@ const BlogPage = () => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
     >
+      <SEO
+        title="Yoga, Meditation and Pranayama Blog"
+        description={blogDescription}
+        canonicalPath="/blog"
+        schema={blogSchema}
+      />
 
       {/* ═══ HERO HEADER ═══ */}
       <section className="bg-[#F4F1E6] pt-20 pb-16 border-b border-[#E8E4D8]">
@@ -146,7 +164,7 @@ const BlogPage = () => {
                 className="mt-5 text-[15px] leading-[1.85] text-[#5A7485] max-w-xl"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
-                Essays on yoga philosophy, breathwork, Ayurveda, and the quiet 
+                Articles on yoga philosophy, breathwork, meditation, Ayurveda, and the quiet
                 discipline of building a life rooted in practice.
               </motion.p>
             </div>

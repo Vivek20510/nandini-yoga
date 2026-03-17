@@ -6,6 +6,7 @@ import GalleryManage from '../components/GalleryManage';
 import NewsletterManage from '../components/NewsletterManage';
 import TestimonialsManage from '../components/TestimonialsManage';
 import PinModal from '../components/PinModal';
+import SEO from '../components/SEO';
 
 const AdminUpload = () => {
   const [posts, setPosts] = useState([]);
@@ -108,6 +109,7 @@ const AdminUpload = () => {
 
   return (
     <>
+      <SEO title="Admin" canonicalPath="/admin" robots="noindex,nofollow" />
       {!isAuthenticated ? (
         <PinModal onSuccess={() => setIsAuthenticated(true)} onClose={() => window.location.href = '/'} />
       ) : (

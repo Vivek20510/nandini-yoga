@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Play, X, ChevronLeft, ChevronRight, LayoutGrid } from "lucide-react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
+import SEO from "../components/SEO";
+import { SITE_URL } from "../lib/site";
 
 /* ─────────────────────────────────────────────
    Variants
@@ -46,6 +48,16 @@ const GalleryPage = () => {
   const [galleryItems, setGalleryItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lightbox, setLightbox] = useState({ isOpen: false, index: 0 });
+  const galleryDescription =
+    "Browse yoga class, workshop, and retreat photos from Yoga By Nandini. Explore the teaching style, sessions, and mindful wellness community in action.";
+
+  const gallerySchema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Yoga Gallery",
+    url: `${SITE_URL}/gallery`,
+    description: galleryDescription,
+  };
 
   /* ── Fetch ── */
   useEffect(() => {
@@ -125,6 +137,12 @@ const GalleryPage = () => {
   ───────────────────────────────────────── */
   return (
     <div className="min-h-screen bg-[#FAFAF7] pb-24">
+      <SEO
+        title="Yoga Class and Workshop Gallery"
+        description={galleryDescription}
+        canonicalPath="/gallery"
+        schema={gallerySchema}
+      />
       <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
 
         {/* ── Page Header ── */}

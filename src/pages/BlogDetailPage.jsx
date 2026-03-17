@@ -5,6 +5,8 @@ import { db } from "../firebase";
 import ReactPlayer from "react-player";
 import { motion, AnimatePresence } from "framer-motion";
 import { Share2, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import SEO from "../components/SEO";
+import { SITE_IMAGE, SITE_NAME, SITE_URL, truncateText } from "../lib/site";
 
 const BlogDetailPage = () => {
   const { id } = useParams();
@@ -53,9 +55,41 @@ const BlogDetailPage = () => {
         year: "numeric", month: "long", day: "numeric",
       })
     : null;
+  const publishedIsoDate = post?.date
+    ? new Date(post.date.seconds * 1000).toISOString()
+    : undefined;
 
   const readTime = post?.desc
     ? `${Math.max(1, Math.ceil(post.desc.split(" ").length / 200))} min read`
+    : null;
+  const articleTitle = post?.title || "Yoga Article";
+  const articleDescription = truncateText(
+    post?.desc || "Read yoga, breathwork, and mindful living guidance from Yoga By Nandini.",
+    160
+  );
+  const articleImage = media.find((item) => item.type !== "video")?.url || SITE_IMAGE;
+  const articleSchema = post
+    ? {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: articleTitle,
+        description: articleDescription,
+        image: [articleImage],
+        author: {
+          "@type": "Organization",
+          name: SITE_NAME,
+        },
+        publisher: {
+          "@type": "Organization",
+          name: SITE_NAME,
+          logo: {
+            "@type": "ImageObject",
+            url: SITE_IMAGE,
+          },
+        },
+        mainEntityOfPage: `${SITE_URL}/blog/${id}`,
+        datePublished: publishedIsoDate,
+      }
     : null;
 
   // Split desc into paragraphs
@@ -65,6 +99,14 @@ const BlogDetailPage = () => {
 
   return (
     <>
+      <SEO
+        title={articleTitle}
+        description={articleDescription}
+        canonicalPath={`/blog/${id}`}
+        image={articleImage}
+        type="article"
+        schema={articleSchema}
+      />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@300;400;500&display=swap');
 
@@ -430,7 +472,7 @@ const BlogDetailPage = () => {
                           ) : (
                             <img
                               src={media[activeMedia]?.url}
-                              alt={`Media ${activeMedia + 1}`}
+                              alt={`${articleTitle} media ${activeMedia + 1}`}
                               className="bdp-media-img"
                             />
                           )}
@@ -465,7 +507,7 @@ const BlogDetailPage = () => {
                             onClick={() => setActiveMedia(i)}
                           >
                             {item.type !== "video" ? (
-                              <img src={item.url} alt={`thumb ${i + 1}`} />
+                              <img src={item.url} alt={`${articleTitle} thumbnail ${i + 1}`} />
                             ) : (
                               <div style={{ width: "100%", height: "100%", background: "var(--bark)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem" }}>▶</div>
                             )}

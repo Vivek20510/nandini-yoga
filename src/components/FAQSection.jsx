@@ -2,47 +2,47 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
+export const FAQ_ITEMS = [
+  {
+    id: 1,
+    question: "Is yoga suitable for complete beginners?",
+    answer: "Absolutely! Our Beginner Yoga program is specifically designed for people with no prior experience. We focus on foundational poses with proper alignment cues. Nandini tailors modifications for every body type, so you progress at your own pace.",
+    category: "beginner",
+  },
+  {
+    id: 2,
+    question: "What should I wear to a yoga class?",
+    answer: "Wear comfortable, breathable clothing that allows free movement. Many students prefer yoga-specific wear, but regular athletic clothing works fine. Bring a yoga mat (or we can provide one) and a water bottle. Classes are barefoot.",
+    category: "beginner",
+  },
+  {
+    id: 3,
+    question: "How long does it take to see results?",
+    answer: "Many students experience reduced stress and improved flexibility within 2-3 weeks. Strength building and deeper mind-body benefits develop over 8-12 weeks. Consistency matters more than duration-a 20-minute daily practice beats sporadic long sessions.",
+    category: "progress",
+  },
+  {
+    id: 4,
+    question: "Can I do yoga if I have injuries or joint pain?",
+    answer: "Yes, but inform Nandini about any injuries before class. Yoga is highly adaptable-she'll suggest modifications to work safely around limitations. In fact, therapeutic yoga often helps with recovery when done correctly.",
+    category: "health",
+  },
+  {
+    id: 5,
+    question: "What's the difference between online and in-person classes?",
+    answer: "Online classes offer flexibility and comfort from home. In-person classes allow for hands-on alignment adjustments and a community atmosphere. Both are equally effective-choose based on your schedule and preference.",
+    category: "logistics",
+  },
+  {
+    id: 6,
+    question: "How do I get started with meditation?",
+    answer: "Start with our Pranayama & Meditation program. We begin with simple breathing techniques to calm the nervous system, then progress to guided meditation. Even 5 minutes daily creates noticeable mental clarity within weeks.",
+    category: "meditation",
+  },
+];
+
 const FAQSection = () => {
   const [openId, setOpenId] = useState(null);
-
-  const faqs = [
-    {
-      id: 1,
-      question: "Is yoga suitable for complete beginners?",
-      answer: "Absolutely! Our Beginner Yoga program is specifically designed for people with no prior experience. We focus on foundational poses with proper alignment cues. Nandini tailors modifications for every body type, so you progress at your own pace.",
-      category: "beginner",
-    },
-    {
-      id: 2,
-      question: "What should I wear to a yoga class?",
-      answer: "Wear comfortable, breathable clothing that allows free movement. Many students prefer yoga-specific wear, but regular athletic clothing works fine. Bring a yoga mat (or we can provide one) and a water bottle. Classes are barefoot.",
-      category: "beginner",
-    },
-    {
-      id: 3,
-      question: "How long does it take to see results?",
-      answer: "Many students experience reduced stress and improved flexibility within 2-3 weeks. Strength building and deeper mind-body benefits develop over 8-12 weeks. Consistency matters more than duration—a 20-minute daily practice beats sporadic long sessions.",
-      category: "progress",
-    },
-    {
-      id: 4,
-      question: "Can I do yoga if I have injuries or joint pain?",
-      answer: "Yes, but inform Nandini about any injuries before class. Yoga is highly adaptable—she'll suggest modifications to work safely around limitations. In fact, therapeutic yoga often helps with recovery when done correctly.",
-      category: "health",
-    },
-    {
-      id: 5,
-      question: "What's the difference between online and in-person classes?",
-      answer: "Online classes offer flexibility and comfort from home. In-person classes allow for hands-on alignment adjustments and a community atmosphere. Both are equally effective—choose based on your schedule and preference.",
-      category: "logistics",
-    },
-    {
-      id: 6,
-      question: "How do I get started with meditation?",
-      answer: "Start with our Pranayama & Meditation program. We begin with simple breathing techniques to calm the nervous system, then progress to guided meditation. Even 5 minutes daily creates noticeable mental clarity within weeks.",
-      category: "meditation",
-    },
-  ];
 
   const toggleFAQ = (id) => {
     setOpenId(openId === id ? null : id);
@@ -76,7 +76,7 @@ const FAQSection = () => {
 
         {/* FAQ Items */}
         <div className="space-y-4">
-          {faqs.map((faq, index) => (
+          {FAQ_ITEMS.map((faq, index) => (
             <motion.div
               key={faq.id}
               initial={{ opacity: 0, y: 20 }}

@@ -6,10 +6,18 @@ import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import YogaAnimation from "../assets/yoga-animation.json";
 import TestimonialsSection from "../components/TestimonialsSection";
 import GallerySection from "../components/GallerySection";
-import FAQSection from "../components/FAQSection";
+import FAQSection, { FAQ_ITEMS } from "../components/FAQSection";
 import TrustIndicatorSection from "../components/TrustIndicatorsSection";
 import NewsletterSection from "../components/NewsletterSection";
+import SEO from "../components/SEO";
 import { db } from "../firebase";
+import {
+  PERSON_NAME,
+  SITE_DESCRIPTION,
+  SITE_IMAGE,
+  SITE_NAME,
+  SITE_URL,
+} from "../lib/site";
 
 /* ─────────── FADE-UP HELPER ─────────── */
 const FadeUp = ({ children, delay = 0, className = "" }) => (
@@ -65,8 +73,63 @@ const Home = () => {
     fetchLatestPosts();
   }, []);
 
+  const homeDescription =
+    "Explore online yoga classes, pranayama, meditation, and mindful living guidance with Nandini Singh. Beginner-friendly private yoga sessions, breathwork support, and holistic wellness programs.";
+
+  const homeSchema = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: SITE_NAME,
+      url: SITE_URL,
+      description: SITE_DESCRIPTION,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: {
+        "@type": "ImageObject",
+        url: SITE_IMAGE,
+      },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      name: PERSON_NAME,
+      jobTitle: "Yoga and Meditation Teacher",
+      url: SITE_URL,
+      image: SITE_IMAGE,
+      worksFor: {
+        "@type": "Organization",
+        name: SITE_NAME,
+      },
+      description:
+        "Certified yoga and meditation teacher offering online yoga, pranayama, meditation, and mindful living guidance.",
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: FAQ_ITEMS.map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faq.answer,
+        },
+      })),
+    },
+  ];
+
   return (
     <div className="font-serif bg-[#FAFAF7] text-[#1D3C52] overflow-x-hidden">
+      <SEO
+        title="Online Yoga Classes, Meditation and Pranayama with Nandini Singh"
+        description={homeDescription}
+        canonicalPath="/"
+        schema={homeSchema}
+      />
 
       {/* ═══════════════════════
           HERO
@@ -103,7 +166,7 @@ const Home = () => {
             >
               Private yoga and mindful living
               <br />
-              <em className="italic text-[#6B8A9A]">guided with depth and calm</em>
+              <em className="italic text-[#6B8A9A]">guided online with depth and calm</em>
             </motion.h1>
 
             <motion.p
@@ -113,9 +176,10 @@ const Home = () => {
               className="mt-6 text-[14.5px] sm:text-[16px] leading-[1.8] text-[#5A7485] max-w-md mx-auto lg:mx-0"
               style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400 }}
             >
-              Beginner-friendly yoga, breathwork, and meditation sessions for people who
-              want more ease, steadiness, and strength in daily life. Available for private
-              guidance, small groups, and mindful wellness programs.
+              Online yoga classes, pranayama, and meditation sessions designed for beginners,
+              busy professionals, and mindful practitioners who want steadiness, mobility, and
+              calm. Work with Nandini through private guidance, small groups, and holistic
+              wellness programs.
             </motion.p>
 
             {/* Tag pill */}
@@ -128,9 +192,9 @@ const Home = () => {
             >
               <span>Beginner-friendly</span>
               <span className="text-[#C5BCA8]">•</span>
-              <span>Private sessions</span>
+              <span>Online yoga classes</span>
               <span className="text-[#C5BCA8]">•</span>
-              <span>Online + in-person</span>
+              <span>Private meditation coaching</span>
             </motion.p>
 
             {/* CTA buttons */}
@@ -539,6 +603,37 @@ const Home = () => {
         </div>
       </section>
 
+      <section className="py-20 sm:py-24 bg-white border-y border-[#E8E4D8]">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 lg:px-20">
+          <FadeUp className="max-w-4xl">
+            <Label>Online Yoga Guidance</Label>
+            <h2
+              className="text-[clamp(1.9rem,4.5vw,3rem)] font-normal leading-[1.18] text-[#1D3C52]"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            >
+              Looking for online yoga classes, guided meditation, or pranayama support?
+            </h2>
+            <p
+              className="mt-5 text-[14.5px] sm:text-[15.5px] leading-[1.9] text-[#5A7485]"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            >
+              Yoga By Nandini supports students who want more than a workout. Sessions combine
+              traditional yoga practice, breathwork, meditation, and mindful lifestyle guidance
+              for people building a calmer, stronger routine at home.
+            </p>
+            <p
+              className="mt-4 text-[14.5px] sm:text-[15.5px] leading-[1.9] text-[#5A7485]"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            >
+              You can begin with beginner yoga classes, private online yoga sessions, meditation
+              coaching, or pranayama practices that help with stress, mobility, focus, sleep, and
+              consistency. The approach is personal, beginner-friendly, and rooted in Indian yogic
+              tradition rather than trend-driven routines.
+            </p>
+          </FadeUp>
+        </div>
+      </section>
+
       {/* ═══════════════════════
           GALLERY SECTION
       ═══════════════════════ */}
@@ -695,7 +790,7 @@ const Home = () => {
 
                 return (
                   <FadeUp key={post.id} delay={i * 0.12}>
-                    <Link to={`/blog?id=${post.id}`} className="group block h-full">
+                    <Link to={`/blog/${post.id}`} className="group block h-full">
                       <div className="h-full bg-white border border-[#E8E4D8] rounded-2xl p-5 sm:p-7 hover:border-[#A8BDC8] hover:shadow-lg transition-all duration-400 active:scale-[0.99]">
                         <div className="flex items-center gap-3 mb-4 sm:mb-5">
                           {post.category && (

@@ -246,7 +246,12 @@ const BlogPostCard = ({ post, featured = false }) => {
                 {item.type === "video" ? (
                   <ReactPlayer url={item.url} controls width="100%" height="100%" />
                 ) : (
-                  <img src={item.url} alt={`Media ${i + 1}`} loading="lazy" className="bpc-media-img" />
+                  <img
+                    src={item.url}
+                    alt={`${title || "Yoga article"} media ${i + 1}`}
+                    loading="lazy"
+                    className="bpc-media-img"
+                  />
                 )}
               </div>
             ))}

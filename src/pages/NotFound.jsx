@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import SEO from "../components/SEO";
 
 /* ─────────── FADE-UP HELPER ─────────── */
 const FadeUp = ({ children, delay = 0, className = "" }) => (
@@ -42,6 +43,7 @@ const Divider = () => (
 const NotFound = () => {
   return (
     <div className="font-serif bg-[#FAFAF7] text-[#1D3C52] overflow-x-hidden">
+      <SEO title="Page Not Found" canonicalPath="/404" robots="noindex,nofollow" />
 
       {/* ═══ HERO ═══ */}
       <section className="relative min-h-[85vh] flex items-center bg-[#F4F1E6] overflow-hidden">
