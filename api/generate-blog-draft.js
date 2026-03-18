@@ -1,5 +1,7 @@
 import { getAiConfig, json, sendAiRequest } from "./_ai-provider.js";
 
+export const maxDuration = 30;
+
 const MAX_FIELD_LENGTH = 1000;
 const MAX_NOTES_LENGTH = 3000;
 
@@ -43,6 +45,32 @@ const validateDraft = (draft) =>
       draft.metaDescription
   );
 
+const getMaxTokens = (lengthValue) => {
+  const value = String(lengthValue || "").toLowerCase();
+
+  if (value.includes("1300") || value.includes("1600")) return 1500;
+  if (value.includes("900") || value.includes("1200")) return 1200;
+  return 900;
+};
+
+const extractAiContent = (data) => {
+  const message = data?.choices?.[0]?.message;
+  const content = message?.content;
+
+  if (typeof content === "string") {
+    return content;
+  }
+
+  if (Array.isArray(content)) {
+    return content
+      .map((item) => (typeof item?.text === "string" ? item.text : ""))
+      .join("")
+      .trim();
+  }
+
+  return "";
+};
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return json(res, 405, { ok: false, message: "Method not allowed." });
@@ -84,7 +112,7 @@ export default async function handler(req, res) {
       });
     }
 
-    const { model } = getAiConfig();
+    const { model, fallbackModels } = getAiConfig();
     const systemPrompt = [
       "You are a wellness content assistant for Yoga By Nandini.",
       "Return valid JSON only, with no markdown fences and no commentary.",
@@ -107,59 +135,88 @@ export default async function handler(req, res) {
       .filter(Boolean)
       .join("\n");
 
-    const { response, data } = await sendAiRequest({
-      model,
-      temperature: 0.8,
-      max_tokens: 1200,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt },
-      ],
-      response_format: {
-        type: "json_object",
-      },
+    const modelsToTry = [model, ...fallbackModels].filter(Boolean);
+    let lastFailure = null;
+
+    for (const currentModel of modelsToTry) {
+      try {
+        const { response, data } = await sendAiRequest({
+          model: currentModel,
+          temperature: 0.7,
+          max_tokens: getMaxTokens(cleanLength),
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt },
+          ],
+          response_format: {
+            type: "json_object",
+          },
+        });
+
+        if (!response.ok) {
+          lastFailure = {
+            status: response.status || 502,
+            code: "AI_PROVIDER_ERROR",
+            message: data?.error?.message || data?.message || "Could not generate a draft right now.",
+          };
+          continue;
+        }
+
+        const rawContent = extractAiContent(data);
+
+        if (!rawContent) {
+          lastFailure = {
+            status: 502,
+            code: "EMPTY_AI_RESPONSE",
+            message: "The AI provider returned an empty draft.",
+          };
+          continue;
+        }
+
+        let parsed;
+        try {
+          parsed = JSON.parse(rawContent);
+        } catch {
+          lastFailure = {
+            status: 502,
+            code: "INVALID_AI_JSON",
+            message: "The AI provider returned an invalid draft format.",
+          };
+          continue;
+        }
+
+        const draft = normalizeDraft(parsed);
+
+        if (!validateDraft(draft)) {
+          lastFailure = {
+            status: 502,
+            code: "INCOMPLETE_AI_DRAFT",
+            message: "The AI draft was incomplete. Please try again.",
+          };
+          continue;
+        }
+
+        return json(res, 200, { ok: true, draft, model: currentModel });
+      } catch (error) {
+        lastFailure = error.code === "AI_TIMEOUT"
+          ? {
+              status: 504,
+              code: "AI_TIMEOUT",
+              message: "The AI provider took too long to respond. Please try again in a moment.",
+            }
+          : {
+              status: 502,
+              code: "AI_REQUEST_FAILED",
+              message: "Could not reach the AI provider right now.",
+            };
+      }
+    }
+
+    return json(res, lastFailure?.status || 502, {
+      ok: false,
+      code: lastFailure?.code || "AI_PROVIDER_ERROR",
+      message: lastFailure?.message || "Could not generate a draft right now.",
     });
-
-    if (!response.ok) {
-      return json(res, response.status || 502, {
-        ok: false,
-        code: "AI_PROVIDER_ERROR",
-        message: data?.error?.message || data?.message || "Could not generate a draft right now.",
-      });
-    }
-
-    const rawContent = data?.choices?.[0]?.message?.content;
-
-    if (!rawContent) {
-      return json(res, 502, {
-        ok: false,
-        code: "EMPTY_AI_RESPONSE",
-        message: "The AI provider returned an empty draft.",
-      });
-    }
-
-    let parsed;
-    try {
-      parsed = JSON.parse(rawContent);
-    } catch {
-      return json(res, 502, {
-        ok: false,
-        code: "INVALID_AI_JSON",
-        message: "The AI provider returned an invalid draft format.",
-      });
-    }
-
-    const draft = normalizeDraft(parsed);
-
-    if (!validateDraft(draft)) {
-      return json(res, 502, {
-        ok: false,
-        code: "INCOMPLETE_AI_DRAFT",
-        message: "The AI draft was incomplete. Please try again.",
-      });
-    }
-
-    return json(res, 200, { ok: true, draft });
   } catch (error) {
     return json(res, 500, {
       ok: false,

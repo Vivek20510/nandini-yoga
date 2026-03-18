@@ -116,7 +116,9 @@ const BlogGenerate = ({ onUploadSuccess }) => {
       setDraft({ title: data.draft.title || "", excerpt: data.draft.excerpt || "", body: data.draft.body || "", category: data.draft.category || "", tags: Array.isArray(data.draft.tags) ? data.draft.tags.join(", ") : "", metaDescription: data.draft.metaDescription || "" });
       setUsedAiDraft(true); setStatusMsg("AI draft generated. Review and edit it before publishing.");
     } catch (error) {
-      setAiError(error?.response?.data?.message || "AI draft generation failed.");
+      const status = error?.response?.status;
+      const message = error?.response?.data?.message;
+      setAiError(status === 504 ? message || "The AI request timed out. Please try again in a moment." : message || "AI draft generation failed.");
     } finally {
       setAiLoading(false);
     }
