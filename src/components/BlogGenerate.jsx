@@ -117,8 +117,15 @@ const BlogGenerate = ({ onUploadSuccess }) => {
       setUsedAiDraft(true); setStatusMsg("AI draft generated. Review and edit it before publishing.");
     } catch (error) {
       const status = error?.response?.status;
+      const code = error?.response?.data?.code;
       const message = error?.response?.data?.message;
-      setAiError(status === 504 ? message || "The AI request timed out. Please try again in a moment." : message || "AI draft generation failed.");
+      if (status === 504) {
+        setAiError(message || "The AI request timed out. Please try again in a moment.");
+      } else if (code === "AI_INVALID_JSON" || code === "AI_EMPTY_RESPONSE") {
+        setAiError(message || "The AI provider returned an unexpected response.");
+      } else {
+        setAiError(message || "AI draft generation failed.");
+      }
     } finally {
       setAiLoading(false);
     }

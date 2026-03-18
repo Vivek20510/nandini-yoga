@@ -58,17 +58,23 @@ const extractAiContent = (data) => {
   const content = message?.content;
 
   if (typeof content === "string") {
-    return content;
+    return content.trim();
   }
 
   if (Array.isArray(content)) {
-    return content
+    const joined = content
       .map((item) => (typeof item?.text === "string" ? item.text : ""))
       .join("")
       .trim();
+
+    if (joined) {
+      return joined;
+    }
   }
 
-  return "";
+  const error = new Error("The AI provider returned an unsupported response shape.");
+  error.code = "AI_EMPTY_RESPONSE";
+  throw error;
 };
 
 export default async function handler(req, res) {
@@ -148,6 +154,7 @@ export default async function handler(req, res) {
             { role: "system", content: systemPrompt },
             { role: "user", content: userPrompt },
           ],
+          stream: false,
           response_format: {
             type: "json_object",
           },
@@ -164,40 +171,45 @@ export default async function handler(req, res) {
 
         const rawContent = extractAiContent(data);
 
-        if (!rawContent) {
-          lastFailure = {
-            status: 502,
-            code: "EMPTY_AI_RESPONSE",
-            message: "The AI provider returned an empty draft.",
-          };
-          continue;
-        }
-
         let parsed;
         try {
           parsed = JSON.parse(rawContent);
         } catch {
-          lastFailure = {
-            status: 502,
-            code: "INVALID_AI_JSON",
+          return json(res, 502, {
+            ok: false,
+            code: "AI_INVALID_JSON",
             message: "The AI provider returned an invalid draft format.",
-          };
-          continue;
+          });
         }
 
         const draft = normalizeDraft(parsed);
 
         if (!validateDraft(draft)) {
-          lastFailure = {
-            status: 502,
+          return json(res, 502, {
+            ok: false,
             code: "INCOMPLETE_AI_DRAFT",
             message: "The AI draft was incomplete. Please try again.",
-          };
-          continue;
+          });
         }
 
         return json(res, 200, { ok: true, draft, model: currentModel });
       } catch (error) {
+        if (error.code === "AI_INVALID_JSON") {
+          return json(res, 502, {
+            ok: false,
+            code: "AI_INVALID_JSON",
+            message: "The AI provider returned invalid JSON.",
+          });
+        }
+
+        if (error.code === "AI_EMPTY_RESPONSE") {
+          return json(res, 502, {
+            ok: false,
+            code: "AI_EMPTY_RESPONSE",
+            message: "The AI provider returned an empty draft.",
+          });
+        }
+
         lastFailure = error.code === "AI_TIMEOUT"
           ? {
               status: 504,
