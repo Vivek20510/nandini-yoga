@@ -8,6 +8,18 @@ import TestimonialsManage from '../components/TestimonialsManage';
 import PinModal from '../components/PinModal';
 import SEO from '../components/SEO';
 
+const normalizeTags = (tags) => {
+  if (Array.isArray(tags)) {
+    return tags.map(tag => String(tag).trim()).filter(Boolean);
+  }
+
+  if (typeof tags === 'string') {
+    return tags.split(',').map(tag => tag.trim()).filter(Boolean);
+  }
+
+  return [];
+};
+
 const AdminUpload = () => {
   const [posts, setPosts] = useState([]);
   const [galleryItems, setGalleryItems] = useState([]);
@@ -42,7 +54,7 @@ const AdminUpload = () => {
 
   const filteredDashboardPosts = posts.filter(p =>
     (p.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (p.tags || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    normalizeTags(p.tags).join(' ').toLowerCase().includes(searchQuery.toLowerCase()) ||
     (p.category || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -1409,18 +1421,22 @@ const AdminUpload = () => {
                         </div>
                       </div>
                     ) : (
-                      filteredDashboardPosts.slice(0, 5).map(post => (
-                        <div className="adm-post-row" key={post.id}>
-                          <div className="adm-post-thumb">
-                            {post.thumbnail ? <img src={post.thumbnail} alt="" /> : '🌸'}
+                      filteredDashboardPosts.slice(0, 5).map(post => {
+                        const firstTag = normalizeTags(post.tags)[0];
+
+                        return (
+                          <div className="adm-post-row" key={post.id}>
+                            <div className="adm-post-thumb">
+                              {post.thumbnail ? <img src={post.thumbnail} alt="" /> : '🌸'}
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div className="adm-post-title">{post.title || 'Untitled Post'}</div>
+                              <div className="adm-post-meta">{post.category || post.type || 'Yoga'}</div>
+                            </div>
+                            {firstTag && <span className="adm-post-tag">{firstTag}</span>}
                           </div>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div className="adm-post-title">{post.title || 'Untitled Post'}</div>
-                            <div className="adm-post-meta">{post.category || post.type || 'Yoga'}</div>
-                          </div>
-                          {post.tags && <span className="adm-post-tag">{post.tags.split(',')[0]}</span>}
-                        </div>
-                      ))
+                        );
+                      })
                     )}
                   </div>
 
