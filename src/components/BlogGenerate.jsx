@@ -211,7 +211,7 @@ const BlogGenerate = ({ onUploadSuccess }) => {
               </div>
               <div className="grid gap-4 md:grid-cols-2">
                 <Field label="Keywords" hint="comma separated"><input className={inputClassName} value={promptForm.keywords} onChange={(e) => setPromptField("keywords", e.target.value)} placeholder="online yoga, pranayama, meditation" /></Field>
-                <Field label="Length"><select className={inputClassName} value={promptForm.length} onChange={(e) => setPromptField("length", e.target.value)}><option>600-800 words</option><option>900-1200 words</option><option>1300-1600 words</option></select></Field>
+                <Field label="Length"><select className={inputClassName} value={promptForm.length} onChange={(e) => setPromptField("length", e.target.value)}><option>200words</option><option>400 words</option><option>600 words</option></select></Field>
               </div>
               <Field label="Additional Notes"><textarea className={`min-h-[110px] ${textareaClassName}`} value={promptForm.notes} onChange={(e) => setPromptField("notes", e.target.value)} placeholder="Include a practical breathing exercise, keep it beginner-friendly..." /></Field>
               <div className="flex flex-wrap gap-3">
