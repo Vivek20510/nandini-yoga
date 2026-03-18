@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import ReactPlayer from "react-player";
 import { Share2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { getOrderedBlogMedia } from "../lib/blogMedia";
 
 /* ── SHARED STYLES (injected once via a module-level flag) ── */
 let stylesInjected = false;
@@ -191,11 +192,12 @@ function injectStyles() {
 const BlogPostCard = ({ post, featured = false }) => {
   injectStyles();
 
-  const { title, media = [], desc, date, category } = post;
+  const { title, media = [], desc, excerpt, date, category } = post;
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const startX = useRef(0);
   const isDragging = useRef(false);
+  const orderedMedia = getOrderedBlogMedia(media);
 
   const handleStart = (e) => {
     isDragging.current = true;
@@ -205,8 +207,8 @@ const BlogPostCard = ({ post, featured = false }) => {
     if (!isDragging.current) return;
     const endX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
     const diff = endX - startX.current;
-    if (diff > 50) setCurrentIndex((p) => (p === 0 ? media.length - 1 : p - 1));
-    if (diff < -50) setCurrentIndex((p) => (p === media.length - 1 ? 0 : p + 1));
+    if (diff > 50) setCurrentIndex((p) => (p === 0 ? orderedMedia.length - 1 : p - 1));
+    if (diff < -50) setCurrentIndex((p) => (p === orderedMedia.length - 1 ? 0 : p + 1));
     isDragging.current = false;
   };
 
@@ -225,13 +227,14 @@ const BlogPostCard = ({ post, featured = false }) => {
     : null;
 
   // Estimate read time from desc
+  const articlePreview = excerpt || desc;
   const readTime = desc ? `${Math.max(1, Math.ceil(desc.split(" ").length / 200))} min read` : null;
 
   return (
     <article className={`bpc-root${featured ? " featured" : ""}`}>
 
       {/* ── MEDIA ── */}
-      {media.length > 0 && (
+      {orderedMedia.length > 0 && (
         <div
           className="bpc-media"
           onTouchStart={handleStart}
@@ -241,14 +244,14 @@ const BlogPostCard = ({ post, featured = false }) => {
           onMouseLeave={() => (isDragging.current = false)}
         >
           <div className="bpc-media-inner" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
-            {media.map((item, i) => (
+            {orderedMedia.map((item, i) => (
               <div key={i} className="bpc-media-slide">
                 {item.type === "video" ? (
                   <ReactPlayer url={item.url} controls width="100%" height="100%" />
                 ) : (
                   <img
                     src={item.url}
-                    alt={`${title || "Yoga article"} media ${i + 1}`}
+                    alt={item.alt || `${title || "Yoga article"} media ${i + 1}`}
                     loading="lazy"
                     className="bpc-media-img"
                   />
@@ -258,17 +261,17 @@ const BlogPostCard = ({ post, featured = false }) => {
           </div>
 
           {/* Prev / Next arrows */}
-          {media.length > 1 && (
+          {orderedMedia.length > 1 && (
             <>
-              <button className="bpc-nav-btn prev" onClick={() => setCurrentIndex((p) => (p === 0 ? media.length - 1 : p - 1))}>‹</button>
-              <button className="bpc-nav-btn next" onClick={() => setCurrentIndex((p) => (p === media.length - 1 ? 0 : p + 1))}>›</button>
+              <button className="bpc-nav-btn prev" onClick={() => setCurrentIndex((p) => (p === 0 ? orderedMedia.length - 1 : p - 1))}>‹</button>
+              <button className="bpc-nav-btn next" onClick={() => setCurrentIndex((p) => (p === orderedMedia.length - 1 ? 0 : p + 1))}>›</button>
             </>
           )}
 
           {/* Dots */}
-          {media.length > 1 && (
+          {orderedMedia.length > 1 && (
             <div className="bpc-dots">
-              {media.map((_, i) => (
+              {orderedMedia.map((_, i) => (
                 <button key={i} className={`bpc-dot${i === currentIndex ? " active" : ""}`} onClick={() => setCurrentIndex(i)} />
               ))}
             </div>
@@ -286,7 +289,7 @@ const BlogPostCard = ({ post, featured = false }) => {
             {title}
           </h2>
 
-          <p className="bpc-desc">{desc}</p>
+          <p className="bpc-desc">{articlePreview}</p>
 
           <button className="bpc-read-btn" onClick={() => navigate(`/blog/${post.id}`)}>
             Read Article <span style={{ fontSize: "1rem" }}>→</span>

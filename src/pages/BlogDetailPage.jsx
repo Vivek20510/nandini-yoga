@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Share2, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import SEO from "../components/SEO";
 import { SITE_IMAGE, SITE_NAME, SITE_URL, truncateText } from "../lib/site";
+import { getOrderedBlogMedia } from "../lib/blogMedia";
 
 const BlogDetailPage = () => {
   const { id } = useParams();
@@ -49,7 +50,7 @@ const BlogDetailPage = () => {
     }
   };
 
-  const media = post?.media || [];
+  const media = getOrderedBlogMedia(post?.media || []);
   const formattedDate = post?.date
     ? new Date(post.date.seconds * 1000).toLocaleDateString("en-US", {
         year: "numeric", month: "long", day: "numeric",
@@ -64,7 +65,10 @@ const BlogDetailPage = () => {
     : null;
   const articleTitle = post?.title || "Yoga Article";
   const articleDescription = truncateText(
-    post?.desc || "Read yoga, breathwork, and mindful living guidance from Yoga By Nandini.",
+    post?.metaDescription ||
+      post?.excerpt ||
+      post?.desc ||
+      "Read yoga, breathwork, and mindful living guidance from Yoga By Nandini.",
     160
   );
   const articleImage = media.find((item) => item.type !== "video")?.url || SITE_IMAGE;
@@ -75,6 +79,7 @@ const BlogDetailPage = () => {
         headline: articleTitle,
         description: articleDescription,
         image: [articleImage],
+        keywords: Array.isArray(post.tags) ? post.tags.join(", ") : undefined,
         author: {
           "@type": "Organization",
           name: SITE_NAME,
@@ -439,6 +444,40 @@ const BlogDetailPage = () => {
                       </>
                     )}
                   </div>
+                  {post.excerpt && (
+                    <p
+                      style={{
+                        marginTop: "18px",
+                        fontFamily: "var(--font-body)",
+                        fontSize: "0.95rem",
+                        lineHeight: 1.8,
+                        color: "rgba(44,36,23,0.56)",
+                      }}
+                    >
+                      {post.excerpt}
+                    </p>
+                  )}
+                  {Array.isArray(post.tags) && post.tags.length > 0 && (
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "18px" }}>
+                      {post.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          style={{
+                            padding: "4px 10px",
+                            borderRadius: "999px",
+                            border: "1px solid rgba(184,114,74,0.24)",
+                            color: "var(--terra)",
+                            fontFamily: "var(--font-body)",
+                            fontSize: "0.64rem",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.14em",
+                          }}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </motion.div>
               </div>
             </header>
@@ -472,7 +511,10 @@ const BlogDetailPage = () => {
                           ) : (
                             <img
                               src={media[activeMedia]?.url}
-                              alt={`${articleTitle} media ${activeMedia + 1}`}
+                              alt={
+                                media[activeMedia]?.alt ||
+                                `${articleTitle} media ${activeMedia + 1}`
+                              }
                               className="bdp-media-img"
                             />
                           )}
@@ -507,7 +549,10 @@ const BlogDetailPage = () => {
                             onClick={() => setActiveMedia(i)}
                           >
                             {item.type !== "video" ? (
-                              <img src={item.url} alt={`${articleTitle} thumbnail ${i + 1}`} />
+                              <img
+                                src={item.url}
+                                alt={item.alt || `${articleTitle} thumbnail ${i + 1}`}
+                              />
                             ) : (
                               <div style={{ width: "100%", height: "100%", background: "var(--bark)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem" }}>▶</div>
                             )}
