@@ -3,12 +3,11 @@ import ReactCrop, { centerCrop, makeAspectCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { addDoc, collection, Timestamp } from "firebase/firestore";
 import axios from "axios";
-import { ArrowDown, ArrowUp, Check, Crop, ImagePlus, Sparkles, Star, Trash2, Upload, Video, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, Crop, ImagePlus, Star, Trash2, Upload, Video, X } from "lucide-react";
 import { db } from "../firebase";
 import { Alert, Card, Field } from "./BlogManageHelpers";
 
 const emptyDraft = { title: "", excerpt: "", body: "", category: "", tags: "", metaDescription: "" };
-const emptyPrompt = { topic: "", audience: "", tone: "Warm and grounding", keywords: "", length: "900-1200 words", notes: "" };
 const ASPECT_PRESETS = [{ key: "16:9", label: "16:9", aspect: 16 / 9 }, { key: "4:3", label: "4:3", aspect: 4 / 3 }, { key: "1:1", label: "1:1", aspect: 1 }, { key: "original", label: "Original", aspect: undefined }];
 const inputClassName = "w-full rounded-lg border border-[#cbbca7] bg-white px-4 py-3 text-sm outline-none focus:border-[#B8724A]";
 const textareaClassName = "w-full rounded-lg border border-[#cbbca7] bg-white px-4 py-3 text-sm outline-none focus:border-[#B8724A]";
@@ -58,15 +57,11 @@ const createMediaDraft = (file, options = {}) => ({
 
 const BlogGenerate = ({ onUploadSuccess }) => {
   const [draft, setDraft] = useState(emptyDraft);
-  const [promptForm, setPromptForm] = useState(emptyPrompt);
   const [mediaItems, setMediaItems] = useState([]);
   const [pin, setPin] = useState("");
   const [statusMsg, setStatusMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-  const [aiError, setAiError] = useState("");
-  const [usedAiDraft, setUsedAiDraft] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [aiLoading, setAiLoading] = useState(false);
   const [cropEditor, setCropEditor] = useState(null);
   const [crop, setCrop] = useState();
   const [completedCrop, setCompletedCrop] = useState(null);
@@ -78,8 +73,6 @@ const BlogGenerate = ({ onUploadSuccess }) => {
   const cropImageRef = useRef(null);
 
   const setDraftField = (field, value) => setDraft((prev) => ({ ...prev, [field]: value }));
-  const setPromptField = (field, value) => setPromptForm((prev) => ({ ...prev, [field]: value }));
-  const canGenerate = promptForm.topic.trim() && promptForm.audience.trim() && promptForm.tone.trim() && promptForm.keywords.trim() && promptForm.length.trim() && pin.length === 4;
   const ensureSingleCover = (items) => {
     const hasCover = items.some((item) => item.isCover);
     return items.map((item, index) => ({ ...item, isCover: hasCover ? item.isCover : index === 0 }));
@@ -87,7 +80,7 @@ const BlogGenerate = ({ onUploadSuccess }) => {
   const clearDraft = () => {
     mediaItems.forEach((item) => revokePreview(item.previewUrl));
     if (cropEditor?.sourceUrl) revokePreview(cropEditor.sourceUrl);
-    setDraft(emptyDraft); setPromptForm(emptyPrompt); setMediaItems([]); setPin(""); setErrorMsg(""); setAiError(""); setStatusMsg(""); setUsedAiDraft(false); setCropEditor(null); setCrop(undefined); setCompletedCrop(null);
+    setDraft(emptyDraft); setMediaItems([]); setPin(""); setErrorMsg(""); setStatusMsg(""); setCropEditor(null); setCrop(undefined); setCompletedCrop(null);
   };
   const closeCropEditor = () => {
     if (cropEditor?.sourceUrl) revokePreview(cropEditor.sourceUrl);
@@ -107,29 +100,6 @@ const BlogGenerate = ({ onUploadSuccess }) => {
     const firstImage = newItems.find((item) => item.type === "image");
     if (firstImage) openCropEditor(firstImage);
   };
-  const handleGenerate = async () => {
-    if (!canGenerate) return setAiError("Fill in the AI prompt fields and admin PIN before generating.");
-    if (Object.values(draft).some((value) => String(value || "").trim()) && !window.confirm("Replace the current draft with a new AI draft?")) return;
-    setAiLoading(true); setAiError(""); setStatusMsg("");
-    try {
-      const { data } = await axios.post("/api/generate-blog-draft", { ...promptForm, pin });
-      setDraft({ title: data.draft.title || "", excerpt: data.draft.excerpt || "", body: data.draft.body || "", category: data.draft.category || "", tags: Array.isArray(data.draft.tags) ? data.draft.tags.join(", ") : "", metaDescription: data.draft.metaDescription || "" });
-      setUsedAiDraft(true); setStatusMsg("AI draft generated. Review and edit it before publishing.");
-    } catch (error) {
-      const status = error?.response?.status;
-      const code = error?.response?.data?.code;
-      const message = error?.response?.data?.message;
-      if (status === 504) {
-        setAiError(message || "The AI request timed out. Please try again in a moment.");
-      } else if (code === "AI_INVALID_JSON" || code === "AI_EMPTY_RESPONSE") {
-        setAiError(message || "The AI provider returned an unexpected response.");
-      } else {
-        setAiError(message || "AI draft generation failed.");
-      }
-    } finally {
-      setAiLoading(false);
-    }
-  };
   const handleUpload = async () => {
     if (!draft.title.trim() || !draft.body.trim() || !draft.excerpt.trim() || !draft.metaDescription.trim() || pin.length !== 4) return setErrorMsg("Complete the draft and admin PIN before publishing.");
     setLoading(true); setErrorMsg(""); setStatusMsg("");
@@ -143,7 +113,7 @@ const BlogGenerate = ({ onUploadSuccess }) => {
         const response = await axios.post(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, formData);
         uploadedMedia.push({ url: response.data.secure_url, type: response.data.resource_type, alt: item.type === "image" ? item.alt.trim() : "", isCover: item.isCover });
       }
-      await addDoc(collection(db, "posts"), { title: draft.title.trim(), desc: draft.body.trim(), excerpt: draft.excerpt.trim(), category: draft.category.trim(), tags: splitTags(draft.tags), metaDescription: draft.metaDescription.trim(), media: uploadedMedia, date: Timestamp.now(), pin, generatedByAi: usedAiDraft });
+      await addDoc(collection(db, "posts"), { title: draft.title.trim(), desc: draft.body.trim(), excerpt: draft.excerpt.trim(), category: draft.category.trim(), tags: splitTags(draft.tags), metaDescription: draft.metaDescription.trim(), media: uploadedMedia, date: Timestamp.now(), pin });
       clearDraft(); if (onUploadSuccess) onUploadSuccess(); setStatusMsg("Post published successfully.");
     } catch {
       setErrorMsg("Upload failed. Please try again.");
@@ -202,33 +172,14 @@ const BlogGenerate = ({ onUploadSuccess }) => {
   return (
     <div className="space-y-5">
       {errorMsg && <Alert kind="error" text={errorMsg} />}
-      {aiError && <Alert kind="error" text={aiError} />}
       {statusMsg && <Alert kind="success" text={statusMsg} />}
       <input ref={addInputRef} className="hidden" type="file" accept="image/*,video/*" multiple onChange={(e) => { addMediaFiles(e.target.files); e.target.value = ""; }} />
       <input ref={replaceInputRef} className="hidden" type="file" accept="image/*,video/*" onChange={(e) => { handleReplaceMedia(e.target.files?.[0]); e.target.value = ""; }} />
       <div className="grid gap-5 xl:grid-cols-[1.15fr,0.85fr]">
         <div className="space-y-5">
-          <Card title="AI Draft Assistant">
-            <div className="space-y-4">
-              <div className="rounded-2xl border border-[#eadfce] bg-[#fffaf3] p-4"><p className="text-sm leading-6 text-[#6f6254]">Start with the AI assistant to build a strong first draft, then refine the post before publishing.</p></div>
-              <Field label="Topic"><input className={inputClassName} value={promptForm.topic} onChange={(e) => setPromptField("topic", e.target.value)} placeholder="Yoga for stress relief, morning pranayama..." /></Field>
-              <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Audience"><input className={inputClassName} value={promptForm.audience} onChange={(e) => setPromptField("audience", e.target.value)} placeholder="Beginners, busy professionals..." /></Field>
-                <Field label="Tone"><input className={inputClassName} value={promptForm.tone} onChange={(e) => setPromptField("tone", e.target.value)} placeholder="Warm and grounding" /></Field>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Keywords" hint="comma separated"><input className={inputClassName} value={promptForm.keywords} onChange={(e) => setPromptField("keywords", e.target.value)} placeholder="online yoga, pranayama, meditation" /></Field>
-                <Field label="Length"><select className={inputClassName} value={promptForm.length} onChange={(e) => setPromptField("length", e.target.value)}><option>600-800 words</option><option>900-1200 words</option><option>1300-1600 words</option></select></Field>
-              </div>
-              <Field label="Additional Notes"><textarea className={`min-h-[110px] ${textareaClassName}`} value={promptForm.notes} onChange={(e) => setPromptField("notes", e.target.value)} placeholder="Include a practical breathing exercise, keep it beginner-friendly..." /></Field>
-              <div className="flex flex-wrap gap-3">
-                <button className="inline-flex items-center gap-2 rounded-lg bg-[#2C2417] px-4 py-3 text-xs font-medium uppercase tracking-[0.12em] text-[#F7F3EC] disabled:opacity-50" onClick={handleGenerate} disabled={aiLoading} type="button">{aiLoading ? <><span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />Generating</> : <><Sparkles size={14} />Generate Draft</>}</button>
-                <button className="rounded-lg border border-[#cbbca7] px-4 py-3 text-xs font-medium uppercase tracking-[0.12em] text-[#6f6254]" onClick={clearDraft} type="button">Clear Draft</button>
-              </div>
-            </div>
-          </Card>
           <Card title="Post Draft">
             <div className="space-y-4">
+              <div className="rounded-2xl border border-[#eadfce] bg-[#fffaf3] p-4"><p className="text-sm leading-6 text-[#6f6254]">Write and review the full blog post here before publishing it to the journal.</p></div>
               <Field label="Title"><input className={inputClassName} value={draft.title} onChange={(e) => setDraftField("title", e.target.value)} placeholder="Give this post a title..." /></Field>
               <Field label="Excerpt"><textarea className={`min-h-[90px] ${textareaClassName}`} value={draft.excerpt} onChange={(e) => setDraftField("excerpt", e.target.value)} placeholder="Short article summary..." /></Field>
               <div className="grid gap-4 md:grid-cols-[0.8fr,1.2fr]">
@@ -236,7 +187,10 @@ const BlogGenerate = ({ onUploadSuccess }) => {
                 <Field label="Tags" hint="comma separated"><input className={inputClassName} value={draft.tags} onChange={(e) => setDraftField("tags", e.target.value)} placeholder="pranayama, stress relief, yoga at home" /></Field>
               </div>
               <Field label="Meta Description" hint="under 160 characters"><input className={inputClassName} value={draft.metaDescription} onChange={(e) => setDraftField("metaDescription", e.target.value)} placeholder="Short search description under 160 characters..." /></Field>
-              <Field label="Article Body"><textarea className={`min-h-[320px] ${textareaClassName}`} value={draft.body} onChange={(e) => setDraftField("body", e.target.value)} placeholder="Write or generate the full article body here..." /></Field>
+              <Field label="Article Body"><textarea className={`min-h-[320px] ${textareaClassName}`} value={draft.body} onChange={(e) => setDraftField("body", e.target.value)} placeholder="Write the full article body here..." /></Field>
+              <div className="flex justify-end">
+                <button className="rounded-lg border border-[#cbbca7] px-4 py-3 text-xs font-medium uppercase tracking-[0.12em] text-[#6f6254]" onClick={clearDraft} type="button">Clear Draft</button>
+              </div>
             </div>
           </Card>
         </div>
@@ -282,7 +236,7 @@ const BlogGenerate = ({ onUploadSuccess }) => {
           </Card>
           <Card title="Publish" accent="soft">
             <div className="space-y-4">
-              <div className="rounded-2xl border border-[#eadfce] bg-[#fffaf3] p-4"><p className="text-sm leading-6 text-[#6f6254]">Publishing stays manual even after AI generation. Cover image, alt text, media order, and crop edits are saved with the post.</p></div>
+              <div className="rounded-2xl border border-[#eadfce] bg-[#fffaf3] p-4"><p className="text-sm leading-6 text-[#6f6254]">Publishing is fully manual here. Cover image, alt text, media order, and crop edits are saved with the post.</p></div>
               <Field label="Admin PIN"><input type="password" className={inputClassName} maxLength="4" value={pin} onChange={(e) => setPin(e.target.value)} placeholder="• • • •" autoComplete="current-password" /></Field>
               <button className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#2C2417] px-4 py-3 text-xs font-medium uppercase tracking-[0.12em] text-[#F7F3EC] disabled:opacity-50" onClick={handleUpload} disabled={loading} type="button">{loading ? <><span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />Publishing</> : <><Upload size={14} />Publish Post</>}</button>
             </div>
