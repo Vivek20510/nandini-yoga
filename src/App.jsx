@@ -11,6 +11,7 @@ import AdminPage from "./pages/AdminPage";
 import About from "./pages/About";
 import BlogDetailPage from "./pages/BlogDetailPage";
 import GalleryPage from "./pages/GalleryPage";
+import Meditation from "./pages/Meditation";
 import NotFound from "./pages/NotFound";
 
 const App = () => {
@@ -70,6 +71,14 @@ const App = () => {
           element={
             <MainLayout>
               <GalleryPage />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/meditation"
+          element={
+            <MainLayout>
+              <Meditation />
             </MainLayout>
           }
         />

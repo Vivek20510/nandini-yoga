@@ -5,6 +5,7 @@ import { Instagram, Youtube, Mail } from "lucide-react";
 const navLinks = [
   { name: "Home", path: "/" },
   { name: "About", path: "/about" },
+  { name: "Meditation", path: "/meditation" },
   { name: "Blog", path: "/blog" },
   { name: "Contact", path: "/contact" },
 ];

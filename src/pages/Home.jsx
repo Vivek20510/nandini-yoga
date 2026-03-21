@@ -634,6 +634,95 @@ const Home = () => {
         </div>
       </section>
 
+      <section className="py-20 sm:py-24 bg-[#EAF1EF]">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 md:px-12 lg:px-20">
+          <div className="grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr] gap-10 lg:gap-16 items-center rounded-[2rem] border border-[#D4DFDB] bg-white/70 p-8 sm:p-10 md:p-12 shadow-[0_20px_70px_rgba(29,60,82,0.06)]">
+            <FadeUp>
+              <Label>New</Label>
+              <h2
+                className="text-[clamp(1.8rem,5vw,3.2rem)] font-normal leading-[1.15] text-[#1D3C52]"
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              >
+                Mood-based meditation,
+                <br />
+                <em className="italic text-[#6B8A9A]">created for how you feel today</em>
+              </h2>
+              <p
+                className="mt-5 text-[14.5px] sm:text-[15.5px] leading-[1.9] text-[#5A7485]"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                Choose a mood like anxious, overthinking, tired, or angry, or describe your own
+                feeling. The meditation tool creates a custom script with breath pacing, focus,
+                playback, and a mindful timer in just a few seconds.
+              </p>
+              <div className="mt-7 flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
+                <Link
+                  to="/meditation"
+                  className="inline-flex items-center justify-center rounded-full bg-[#1D3C52] px-7 py-3.5 text-[12px] sm:text-[13px] uppercase tracking-[0.1em] text-white shadow-lg shadow-[#1D3C52]/20 transition-all duration-300 hover:bg-[#2A5470] active:scale-95"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  Try AI Meditation
+                </Link>
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center justify-center rounded-full border border-[#C6D6D1] px-7 py-3.5 text-[12px] sm:text-[13px] uppercase tracking-[0.1em] text-[#1D3C52] transition-all duration-300 hover:border-[#1D3C52] active:scale-95"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  Get Personal Guidance
+                </Link>
+              </div>
+            </FadeUp>
+
+            <FadeUp delay={0.12}>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {[
+                  {
+                    title: "Custom script",
+                    desc: "AI shapes a short guided meditation around your current feeling and selected duration.",
+                  },
+                  {
+                    title: "Breath pacing",
+                    desc: "Each session includes a breathing rhythm, focus point, and gentle tonal direction.",
+                  },
+                  {
+                    title: "Voice + timer",
+                    desc: "Listen with browser voice playback or simply read along with the built-in timer.",
+                  },
+                  {
+                    title: "Return anytime",
+                    desc: "Your recent meditations stay saved on your device so you can revisit them later.",
+                  },
+                ].map((item, i) => (
+                  <div
+                    key={item.title}
+                    className={`rounded-3xl border border-[#D9E2DD] bg-[#F8FBFA] p-5 sm:p-6 ${i === 0 ? "sm:translate-y-6" : ""}`}
+                  >
+                    <p
+                      className="text-[10px] tracking-[0.18em] uppercase text-[#8BA5B5]"
+                      style={{ fontFamily: "'DM Sans', sans-serif" }}
+                    >
+                      Meditation Tool
+                    </p>
+                    <h3
+                      className="mt-3 text-[1.1rem] sm:text-[1.25rem] font-semibold text-[#1D3C52]"
+                      style={{ fontFamily: "'Playfair Display', serif" }}
+                    >
+                      {item.title}
+                    </h3>
+                    <p
+                      className="mt-2 text-[13.5px] leading-[1.8] text-[#5A7485]"
+                      style={{ fontFamily: "'DM Sans', sans-serif" }}
+                    >
+                      {item.desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </FadeUp>
+          </div>
+        </div>
+      </section>
+
       {/* ═══════════════════════
           GALLERY SECTION
       ═══════════════════════ */}
