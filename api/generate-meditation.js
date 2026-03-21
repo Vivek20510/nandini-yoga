@@ -1,7 +1,7 @@
 /* eslint-env node */
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const DEFAULT_MODEL = "openai/gpt-4o-mini";
+const DEFAULT_MODEL = "deepseek/deepseek-chat-v3";
 const CRISIS_RE =
   /\b(suicide|kill myself|self harm|hurt myself|end my life|want to die|die tonight|can'?t go on)\b/i;
 
@@ -158,6 +158,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: process.env.OPENROUTER_MODEL || DEFAULT_MODEL,
         temperature: 0.8,
+        max_tokens: 800,
         response_format: { type: "json_object" },
         messages: [
           { role: "system", content: buildSystemPrompt() },
