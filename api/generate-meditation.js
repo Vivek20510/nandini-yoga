@@ -1,4 +1,5 @@
 /* eslint-env node */
+export const maxDuration = 30;
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 const DEFAULT_MODEL = "deepseek/deepseek-chat-v3";
@@ -103,6 +104,17 @@ function parseModelContent(data) {
 }
 
 export default async function handler(req, res) {
+
+  // CORS headers for local development
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  // Handle browser preflight request
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
   if (req.method !== "POST") {
     return json(res, 405, { ok: false, message: "Method not allowed." });
   }
@@ -158,7 +170,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: process.env.OPENROUTER_MODEL || DEFAULT_MODEL,
         temperature: 0.8,
-        max_tokens: 800,
+        max_tokens: 400,
         response_format: { type: "json_object" },
         messages: [
           { role: "system", content: buildSystemPrompt() },

@@ -45,8 +45,13 @@ export function normalizeMeditationSession(value) {
   };
 }
 
+const API_BASE =
+  import.meta.env.DEV
+    ? "http://localhost:3000"
+    : "";
+
 export async function generateMeditation(payload) {
-  const response = await fetch("/api/generate-meditation", {
+  const response = await fetch(`${API_BASE}/api/generate-meditation`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
