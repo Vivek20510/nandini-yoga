@@ -35,9 +35,9 @@ export const FAQ_ITEMS = [
   },
   {
     id: 6,
-    question: "How do I get started with meditation?",
-    answer: "Start with our Pranayama & Meditation program. We begin with simple breathing techniques to calm the nervous system, then progress to guided meditation. Even 5 minutes daily creates noticeable mental clarity within weeks.",
-    category: "meditation",
+    question: "How do I get started with pranayama?",
+    answer: "Start with simple breath awareness and learn gradually under guidance. Nandini introduces pranayama step by step so the practice stays steady, safe, and easy to continue.",
+    category: "pranayama",
   },
 ];
 

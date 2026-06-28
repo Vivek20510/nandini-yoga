@@ -183,7 +183,7 @@ const BlogGenerate = ({ onUploadSuccess }) => {
               <Field label="Title"><input className={inputClassName} value={draft.title} onChange={(e) => setDraftField("title", e.target.value)} placeholder="Give this post a title..." /></Field>
               <Field label="Excerpt"><textarea className={`min-h-[90px] ${textareaClassName}`} value={draft.excerpt} onChange={(e) => setDraftField("excerpt", e.target.value)} placeholder="Short article summary..." /></Field>
               <div className="grid gap-4 md:grid-cols-[0.8fr,1.2fr]">
-                <Field label="Category"><input className={inputClassName} value={draft.category} onChange={(e) => setDraftField("category", e.target.value)} placeholder="Meditation" /></Field>
+                <Field label="Category"><input className={inputClassName} value={draft.category} onChange={(e) => setDraftField("category", e.target.value)} placeholder="Pranayama" /></Field>
                 <Field label="Tags" hint="comma separated"><input className={inputClassName} value={draft.tags} onChange={(e) => setDraftField("tags", e.target.value)} placeholder="pranayama, stress relief, yoga at home" /></Field>
               </div>
               <Field label="Meta Description" hint="under 160 characters"><input className={inputClassName} value={draft.metaDescription} onChange={(e) => setDraftField("metaDescription", e.target.value)} placeholder="Short search description under 160 characters..." /></Field>

@@ -6,7 +6,7 @@ import { Menu, X } from "lucide-react";
 const navItems = [
   { name: "Home", path: "/" },
   { name: "About", path: "/about" },
-  { name: "Meditation", path: "/meditation" },
+  { name: "Classes", path: "/classes" },
   { name: "Gallery", path: "/gallery" },
   { name: "Blog", path: "/blog" },
   { name: "Contact", path: "/contact" },
@@ -85,11 +85,11 @@ const Navbar = () => {
 
             {/* CTA */}
             <Link
-              to="/contact"
+              to="/classes"
               className="ml-4 px-5 py-2.5 rounded-full border border-[#1D3C52] text-[#1D3C52] text-[12px] tracking-[0.12em] uppercase font-medium hover:bg-[#1D3C52] hover:text-white transition-all duration-300"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              Work With Me
+              View Classes
             </Link>
           </div>
 
@@ -154,12 +154,12 @@ const Navbar = () => {
                   className="pt-2 border-t border-[#E8E4D8]"
                 >
                   <Link
-                    to="/contact"
+                    to="/classes"
                     onClick={() => setIsOpen(false)}
                     className="inline-block px-6 py-3 rounded-full bg-[#1D3C52] text-white text-[12px] tracking-[0.14em] uppercase font-medium"
                     style={{ fontFamily: "'DM Sans', sans-serif" }}
                   >
-                    Work With Me
+                    View Classes
                   </Link>
                 </motion.div>
               </div>

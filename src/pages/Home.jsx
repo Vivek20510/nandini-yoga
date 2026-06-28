@@ -1,15 +1,23 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
-import Lottie from "lottie-react";
+import { motion } from "framer-motion";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
-import YogaAnimation from "../assets/yoga-animation.json";
-import TestimonialsSection from "../components/TestimonialsSection";
-import GallerySection from "../components/GallerySection";
+import {
+  ArrowRight,
+  Award,
+  Leaf,
+  MapPin,
+  Sprout,
+  Sun,
+  Users,
+  Wind,
+} from "lucide-react";
+import yogaPose from "../assets/yoga-pose.png";
 import FAQSection, { FAQ_ITEMS } from "../components/FAQSection";
-import TrustIndicatorSection from "../components/TrustIndicatorsSection";
+import GallerySection from "../components/GallerySection";
 import NewsletterSection from "../components/NewsletterSection";
 import SEO from "../components/SEO";
+import TestimonialsSection from "../components/TestimonialsSection";
 import { db } from "../firebase";
 import {
   PERSON_NAME,
@@ -19,41 +27,65 @@ import {
   SITE_URL,
 } from "../lib/site";
 
-/* ─────────── FADE-UP HELPER ─────────── */
-const FadeUp = ({ children, delay = 0, className = "" }) => (
+const FadeUp = ({ children, className = "", delay = 0 }) => (
   <motion.div
-    initial={{ opacity: 0, y: 24 }}
+    initial={{ opacity: 0, y: 18 }}
     whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-40px" }}
-    transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+    viewport={{ once: true, margin: "-48px" }}
+    transition={{ duration: 0.38, delay, ease: "easeOut" }}
     className={className}
   >
     {children}
   </motion.div>
 );
 
-/* ─────────── SECTION LABEL ─────────── */
-const Label = ({ children }) => (
-  <span
-    className="inline-block text-[10px] tracking-[0.22em] uppercase text-[#8BA5B5] font-semibold mb-4"
-    style={{ fontFamily: "'DM Sans', sans-serif" }}
-  >
+const SectionLabel = ({ children }) => (
+  <div className="mb-4 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] text-yoga-sage">
+    <span className="h-px w-5 bg-yoga-sage" />
     {children}
-  </span>
+  </div>
 );
 
-/* ═══════════════════════════════════════
-   HOME PAGE
-═══════════════════════════════════════ */
+const StatStrip = () => (
+  <section className="grid grid-cols-3 bg-yoga-ink text-yoga-paper">
+    {[
+      ["15+", "Years teaching"],
+      ["500+", "Students taught"],
+      ["Intl.", "Certified"],
+    ].map(([value, label]) => (
+      <div key={label} className="border-r border-white/10 px-3 py-6 text-center last:border-r-0 md:py-8">
+        <span className="block font-display text-3xl font-bold md:text-5xl">{value}</span>
+        <span className="mt-1 block text-[11px] leading-snug text-white/45 md:text-sm">{label}</span>
+      </div>
+    ))}
+  </section>
+);
+
+const disciplines = [
+  {
+    icon: Leaf,
+    title: "Hatha Yoga",
+    text: "Classical posture work with attention to alignment, steadiness, and breath.",
+  },
+  {
+    icon: Wind,
+    title: "Pranayama",
+    text: "Structured breathwork to build focus, calm, and a stronger daily rhythm.",
+  },
+  {
+    icon: Sun,
+    title: "Morning Practice",
+    text: "Small group sessions designed for consistency, clarity, and community.",
+  },
+  {
+    icon: Sprout,
+    title: "Beginner Batches",
+    text: "A patient foundation for students starting from scratch or returning after a pause.",
+  },
+];
+
 const Home = () => {
-  const heroRef = useRef(null);
   const [latestPosts, setLatestPosts] = useState([]);
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-  const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "14%"]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
 
   useEffect(() => {
     const fetchLatestPosts = async () => {
@@ -61,20 +93,18 @@ const Home = () => {
         const postsRef = collection(db, "posts");
         const latestQuery = query(postsRef, orderBy("date", "desc"));
         const querySnapshot = await getDocs(latestQuery);
-        const posts = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+        const posts = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
         setLatestPosts(posts.slice(0, 3));
-      } catch (error) {
+      } catch {
         setLatestPosts([]);
       }
     };
+
     fetchLatestPosts();
   }, []);
 
   const homeDescription =
-    "Explore online yoga classes, pranayama, meditation, and mindful living guidance with Nandini Singh. Beginner-friendly private yoga sessions, breathwork support, and holistic wellness programs.";
+    "Learn Hatha yoga and pranayama with Nandini Singh, an internationally certified yoga teacher with 15+ years of experience teaching small group classes.";
 
   const homeSchema = [
     {
@@ -89,24 +119,18 @@ const Home = () => {
       "@type": "Organization",
       name: SITE_NAME,
       url: SITE_URL,
-      logo: {
-        "@type": "ImageObject",
-        url: SITE_IMAGE,
-      },
+      logo: { "@type": "ImageObject", url: SITE_IMAGE },
     },
     {
       "@context": "https://schema.org",
       "@type": "Person",
       name: PERSON_NAME,
-      jobTitle: "Yoga and Meditation Teacher",
+      jobTitle: "Yoga Teacher",
       url: SITE_URL,
       image: SITE_IMAGE,
-      worksFor: {
-        "@type": "Organization",
-        name: SITE_NAME,
-      },
+      worksFor: { "@type": "Organization", name: SITE_NAME },
       description:
-        "Certified yoga and meditation teacher offering online yoga, pranayama, meditation, and mindful living guidance.",
+        "Certified yoga teacher offering Hatha yoga, pranayama, and small-group batch classes.",
     },
     {
       "@context": "https://schema.org",
@@ -114,723 +138,238 @@ const Home = () => {
       mainEntity: FAQ_ITEMS.map((faq) => ({
         "@type": "Question",
         name: faq.question,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: faq.answer,
-        },
+        acceptedAnswer: { "@type": "Answer", text: faq.answer },
       })),
     },
   ];
 
   return (
-    <div className="font-serif bg-[#FAFAF7] text-[#1D3C52] overflow-x-hidden">
+    <main className="overflow-x-hidden bg-yoga-paper font-body text-yoga-ink">
       <SEO
-        title="Online Yoga Classes, Meditation and Pranayama with Nandini Singh"
+        title="Yoga by Nandini | Hatha Yoga and Pranayama Classes"
         description={homeDescription}
         canonicalPath="/"
         schema={homeSchema}
       />
 
-      {/* ═══════════════════════
-          HERO
-      ═══════════════════════ */}
-      <section
-        ref={heroRef}
-        className="relative min-h-[100svh] flex items-center bg-[#F4F1E6] overflow-hidden"
-      >
-        {/* Decorative blobs — hidden on very small screens */}
-        <div className="absolute right-0 top-0 w-[70vw] sm:w-[55vw] h-[70vw] sm:h-[55vw] rounded-full bg-[#E8E2D0]/50 -translate-y-1/4 translate-x-1/4 pointer-events-none" />
-        <div className="hidden sm:block absolute right-[8%] bottom-[10%] w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-[#D6CDB8]/40 pointer-events-none" />
-
-        <motion.div
-          style={{ y: heroY, opacity: heroOpacity }}
-          className="w-full max-w-7xl mx-auto px-5 sm:px-8 md:px-12 lg:px-20 pt-24 pb-20 sm:py-24 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center"
-        >
-          {/* ── Left column ── */}
-          <div className="relative z-10 text-center lg:text-left">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              className="mb-5 flex justify-center lg:justify-start"
-            >
-              <Label>15+ Years of Teaching</Label>
-            </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-              className="text-[clamp(2.1rem,7vw,4.5rem)] font-normal leading-[1.1] text-[#1D3C52] tracking-[-0.01em]"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
-              Private yoga and mindful living
-              <br />
-              <em className="italic text-[#6B8A9A]">guided online with depth and calm</em>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35, duration: 0.8 }}
-              className="mt-6 text-[14.5px] sm:text-[16px] leading-[1.8] text-[#5A7485] max-w-md mx-auto lg:mx-0"
-              style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400 }}
-            >
-              Online yoga classes, pranayama, and meditation sessions designed for beginners,
-              busy professionals, and mindful practitioners who want steadiness, mobility, and
-              calm. Work with Nandini through private guidance, small groups, and holistic
-              wellness programs.
-            </motion.p>
-
-            {/* Tag pill */}
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.42, duration: 0.75 }}
-              className="mt-5 inline-flex flex-wrap items-center justify-center lg:justify-start gap-2 rounded-full border border-[#D8D2C4] bg-white/70 px-4 py-2 text-[10px] sm:text-[11px] uppercase tracking-[0.14em] text-[#6B8A9A]"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              <span>Beginner-friendly</span>
-              <span className="text-[#C5BCA8]">•</span>
-              <span>Online yoga classes</span>
-              <span className="text-[#C5BCA8]">•</span>
-              <span>Private meditation coaching</span>
-            </motion.p>
-
-            {/* CTA buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="mt-8 sm:mt-10 flex flex-col sm:flex-row flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-5"
-            >
-              <Link
-                to="/contact"
-                className="group w-full sm:w-auto text-center px-7 py-3.5 rounded-full bg-[#1D3C52] text-white text-[12px] sm:text-[13px] tracking-[0.1em] uppercase font-medium hover:bg-[#2A5470] active:scale-95 transition-all duration-300 shadow-lg shadow-[#1D3C52]/20"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                Book a Class
-                <span className="inline-block ml-2 transition-transform duration-300 group-hover:translate-x-1">→</span>
-              </Link>
-              <Link
-                to="/contact"
-                className="text-[12px] sm:text-[13px] tracking-[0.08em] uppercase text-[#8BA5B5] hover:text-[#1D3C52] transition-colors duration-300 font-medium underline underline-offset-4 decoration-[#C5BCA8]"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                Contact Nandini
-              </Link>
-            </motion.div>
-
-            {/* Stats row */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.75, duration: 0.8 }}
-              className="mt-10 sm:mt-12 flex flex-wrap justify-center lg:justify-start gap-6 sm:gap-8 pt-7 sm:pt-8 border-t border-[#D8D2C4]"
-            >
-              {[
-                { num: "15+", label: "Years Teaching" },
-                { num: "500+", label: "Students Guided" },
-                { num: "Online + Offline", label: "Session Modes" },
-              ].map((s) => (
-                <div key={s.label} className="text-center lg:text-left">
-                  <p
-                    className="text-xl sm:text-2xl font-semibold text-[#1D3C52]"
-                    style={{ fontFamily: "'Playfair Display', serif" }}
-                  >
-                    {s.num}
-                  </p>
-                  <p
-                    className="text-[10px] sm:text-[11px] tracking-[0.14em] uppercase text-[#8BA5B5] mt-1"
-                    style={{ fontFamily: "'DM Sans', sans-serif" }}
-                  >
-                    {s.label}
-                  </p>
-                </div>
-              ))}
-            </motion.div>
-          </div>
-
-          {/* ── Right column — Lottie ── */}
+      <section className="border-b border-yoga-border px-5 pb-12 pt-32 md:px-10 md:pb-20 md:pt-36">
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
           <motion.div
-            initial={{ opacity: 0, scale: 0.92 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.4, duration: 1, ease: [0.22, 1, 0.36, 1] }}
-            className="flex justify-center lg:justify-end relative order-first lg:order-last"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.42, ease: "easeOut" }}
           >
-            <div className="absolute inset-0 rounded-full bg-[#E0D9C8]/30 blur-3xl scale-90" />
-            {/* Responsive sizing: smaller on mobile, grows up */}
-            <div className="relative w-[200px] xs:w-[240px] sm:w-[320px] md:w-[360px] lg:w-[420px]">
-              <Lottie animationData={YogaAnimation} loop autoplay />
-            </div>
-          </motion.div>
-        </motion.div>
+            <SectionLabel>Yoga teacher · Nandini Singh</SectionLabel>
+            <h1 className="max-w-4xl font-display text-[42px] font-bold leading-[1.08] text-yoga-ink sm:text-6xl lg:text-7xl">
+              Teaching yoga the way it was meant to be <em className="text-yoga-clay">taught.</em>
+            </h1>
+            <p className="mt-6 max-w-xl text-sm leading-8 text-yoga-ink/70 md:text-base">
+              15 years of practice and teaching in Hatha yoga and pranayama. Based in India,
+              trained internationally, and known for small-group classes that are precise,
+              unhurried, and beginner-friendly.
+            </p>
 
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
-          className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-        >
-          <span
-            className="text-[9px] sm:text-[10px] tracking-[0.2em] uppercase text-[#A09880]"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
-            Scroll
-          </span>
-          <motion.div
-            animate={{ y: [0, 7, 0] }}
-            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-            className="w-[1px] h-6 sm:h-8 bg-gradient-to-b from-[#A09880] to-transparent"
-          />
-        </motion.div>
-      </section>
-
-      {/* ═══════════════════════
-          PHILOSOPHY MARQUEE STRIP
-      ═══════════════════════ */}
-      <section className="py-8 sm:py-10 bg-[#1D3C52] overflow-hidden">
-        <motion.div
-          animate={{ x: ["0%", "-50%"] }}
-          transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
-          className="flex gap-8 sm:gap-12 whitespace-nowrap"
-        >
-          {Array.from({ length: 4 })
-            .flatMap(() => [
-              "Pranayama","·","Asana","·","Meditation","·",
-              "Ayurveda","·","Dharana","·","Samadhi","·",
-            ])
-            .map((w, i) => (
-              <span
-                key={i}
-                className={`text-[11px] sm:text-[13px] tracking-[0.18em] uppercase ${
-                  w === "·" ? "text-[#8BA5B5]" : "text-[#C8D8E0]"
-                }`}
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                {w}
-              </span>
-            ))}
-        </motion.div>
-      </section>
-
-      {/* ═══════════════════════
-          TRUST INDICATORS
-      ═══════════════════════ */}
-      <TrustIndicatorSection />
-
-      {/* ═══════════════════════
-          ABOUT / MEET NANDINI
-      ═══════════════════════ */}
-      <section className="py-20 sm:py-28 bg-[#FAFAF7]">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 md:px-12 lg:px-20 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
-
-          {/* Left */}
-          <div>
-            <FadeUp>
-              <Label>About</Label>
-              <h2
-                className="text-[clamp(1.8rem,5vw,3.2rem)] font-normal leading-[1.15] text-[#1D3C52]"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-              >
-                Meet Nandini Singh
-              </h2>
-            </FadeUp>
-
-            <FadeUp delay={0.15}>
-              <p
-                className="mt-5 text-[14.5px] sm:text-[15.5px] leading-[1.9] text-[#5A7485]"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                Nandini Singh is a certified international yoga and meditation teacher with over 15
-                years of experience guiding students toward balance, strength, and inner clarity. Born
-                and raised in India, her roots in yogic tradition run deep.
-              </p>
-              <p
-                className="mt-4 text-[14.5px] sm:text-[15.5px] leading-[1.9] text-[#5A7485]"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                Her approach blends classical yogic philosophy — rooted in Patanjali's Ashtanga system
-                — with accessible, modern mindfulness practices. Whether you're a complete beginner or
-                an advanced practitioner, she meets you where you are.
-              </p>
-            </FadeUp>
-
-            <FadeUp delay={0.25}>
-              <div className="mt-8">
-                <Link
-                  to="/about"
-                  className="inline-flex items-center gap-2 text-[12px] sm:text-[13px] tracking-[0.1em] uppercase text-[#1D3C52] font-semibold hover:gap-4 transition-all duration-300 border-b border-[#1D3C52] pb-1"
-                  style={{ fontFamily: "'DM Sans', sans-serif" }}
-                >
-                  Full Story →
-                </Link>
-              </div>
-            </FadeUp>
-          </div>
-
-          {/* Right — Training cards */}
-          <div className="space-y-4 pt-0 lg:pt-2">
-            <FadeUp>
-              <Label>Training & Certifications</Label>
-            </FadeUp>
-            {[
-              {
-                title: "Patanjali Yogpeeth",
-                location: "Haridwar, India",
-                desc: "Residential yoga & Ayurvedic wellness immersion under traditional gurukul training.",
-              },
-              {
-                title: "Isha Foundation",
-                location: "Coimbatore, India",
-                desc: "Inner Engineering program and Hatha yoga teacher certification under Sadhguru's lineage.",
-              },
-              {
-                title: "Om Yoga International",
-                location: "Rishikesh, India",
-                desc: "200-hr & 300-hr teacher training in classical Hatha, Vinyasa, and yogic philosophy.",
-              },
-            ].map((item, i) => (
-              <FadeUp key={i} delay={i * 0.12}>
-                <div className="group bg-white border border-[#E8E4D8] rounded-2xl p-5 sm:p-6 hover:border-[#A8BDC8] hover:shadow-md transition-all duration-400 active:scale-[0.99]">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <h3
-                        className="text-[15px] sm:text-[16px] font-semibold text-[#1D3C52] leading-snug"
-                        style={{ fontFamily: "'Playfair Display', serif" }}
-                      >
-                        {item.title}
-                      </h3>
-                      <p
-                        className="text-[10px] sm:text-[11px] tracking-[0.14em] uppercase text-[#8BA5B5] mt-1"
-                        style={{ fontFamily: "'DM Sans', sans-serif" }}
-                      >
-                        {item.location}
-                      </p>
-                    </div>
-                    <span className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0 rounded-full border border-[#E8E4D8] flex items-center justify-center group-hover:border-[#1D3C52] transition-colors duration-300">
-                      <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-                        <path d="M2 10 L10 2 M10 2 H4 M10 2 V8" stroke="#1D3C52" strokeWidth="1.5" strokeLinecap="round" />
-                      </svg>
-                    </span>
-                  </div>
-                  <p
-                    className="mt-3 text-[13px] sm:text-[13.5px] leading-[1.75] text-[#6B8A9A]"
-                    style={{ fontFamily: "'DM Sans', sans-serif" }}
-                  >
-                    {item.desc}
-                  </p>
-                </div>
-              </FadeUp>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════
-          OFFERINGS
-      ═══════════════════════ */}
-      <section className="py-20 sm:py-24 bg-[#F0EDE0]">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 md:px-12 lg:px-20">
-
-          <div className="text-center max-w-2xl mx-auto px-2">
-            <FadeUp>
-              <Label>Offerings</Label>
-              <h2
-                className="text-[clamp(1.8rem,5vw,3.2rem)] font-normal leading-[1.15] text-[#1D3C52]"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-              >
-                A Path for Every Practitioner
-              </h2>
-              <p
-                className="mt-4 text-[14px] sm:text-[15px] leading-[1.9] text-[#5A7485]"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                Thoughtfully designed programs rooted in tradition, adapted for modern life —
-                available online and in-person.
-              </p>
-            </FadeUp>
-          </div>
-
-          {/* Cards — single col on mobile, 3-col on md+ */}
-          <div className="mt-12 sm:mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
-            {[
-              {
-                num: "01",
-                title: "Beginner Yoga",
-                tag: "Beginners",
-                desc: "A calm, structured introduction to movement, alignment, and breathing for people starting fresh or returning after a long pause.",
-                detail: "Foundational series · Online & in-person",
-              },
-              {
-                num: "02",
-                title: "Pranayama & Meditation",
-                tag: "Stress Relief",
-                desc: "Breath-led sessions for nervous system balance, improved focus, and a steadier daily rhythm at work and at home.",
-                detail: "Private guidance · Ongoing support",
-              },
-              {
-                num: "03",
-                title: "Ayurveda & Lifestyle",
-                tag: "Lifestyle Balance",
-                desc: "Practical routines, rest, and seasonal wellness guidance designed to support energy, digestion, sleep, and long-term consistency.",
-                detail: "Workshops & consultations · By enquiry",
-              },
-            ].map((p, i) => (
-              <FadeUp key={i} delay={i * 0.15}>
-                <div className="group relative bg-white rounded-3xl p-6 sm:p-8 border border-[#E0D9C8] hover:border-[#1D3C52]/20 hover:shadow-xl transition-all duration-500 h-full flex flex-col active:scale-[0.99]">
-                  <div className="flex items-start justify-between mb-5 sm:mb-6">
-                    <span
-                      className="text-[10px] tracking-[0.2em] uppercase text-[#8BA5B5] font-medium"
-                      style={{ fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                      {p.tag}
-                    </span>
-                    <span
-                      className="text-[2.2rem] sm:text-[2.8rem] font-light text-[#E8E4D8] leading-none select-none"
-                      style={{ fontFamily: "'Playfair Display', serif" }}
-                    >
-                      {p.num}
-                    </span>
-                  </div>
-
-                  <h3
-                    className="text-[1.2rem] sm:text-[1.4rem] font-semibold text-[#1D3C52] leading-tight mb-3 sm:mb-4"
-                    style={{ fontFamily: "'Playfair Display', serif" }}
-                  >
-                    {p.title}
-                  </h3>
-
-                  <p
-                    className="text-[13.5px] leading-[1.8] text-[#6B8A9A] flex-1"
-                    style={{ fontFamily: "'DM Sans', sans-serif" }}
-                  >
-                    {p.desc}
-                  </p>
-
-                  <div className="mt-5 pt-4 sm:pt-5 border-t border-[#EDE8DC] flex flex-wrap items-center justify-between gap-2">
-                    <span
-                      className="text-[10px] sm:text-[11px] tracking-[0.12em] uppercase text-[#A09880]"
-                      style={{ fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                      {p.detail}
-                    </span>
-                    <Link
-                      to="/contact"
-                      className="text-[12px] text-[#1D3C52] underline underline-offset-2 hover:text-[#2A5470] transition-colors"
-                      style={{ fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                      Enquire
-                    </Link>
-                  </div>
-                </div>
-              </FadeUp>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════
-          WHO THIS IS FOR
-      ═══════════════════════ */}
-      <section className="py-20 sm:py-24 bg-[#FAFAF7]">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 md:px-12 lg:px-20">
-          <div className="grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-12 lg:gap-16 items-start">
-
-            {/* Text block */}
-            <div>
-              <FadeUp>
-                <Label>Who This Is For</Label>
-                <h2
-                  className="text-[clamp(1.75rem,5vw,3rem)] font-normal leading-[1.15] text-[#1D3C52]"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                >
-                  Practice that meets
-                  <br />
-                  <em className="italic text-[#8BA5B5]">real life where it is</em>
-                </h2>
-                <p
-                  className="mt-5 text-[14.5px] sm:text-[15px] leading-[1.85] text-[#5A7485] max-w-xl"
-                  style={{ fontFamily: "'DM Sans', sans-serif" }}
-                >
-                  Whether you are beginning from scratch, returning after a break, or looking for
-                  a quieter and more sustainable way to practice, the work is adapted to your body,
-                  schedule, and stage of life.
-                </p>
-              </FadeUp>
-            </div>
-
-            {/* Cards — 2-col grid on sm+, single col on xs */}
-            <div className="grid grid-cols-1 xs:grid-cols-2 gap-4 sm:gap-6">
+            <div className="mt-8 grid gap-3 text-sm text-yoga-ink/55">
               {[
-                {
-                  title: "Working professionals",
-                  desc: "For people carrying stress, long sitting hours, or mental fatigue who need grounded routines that are realistic to maintain.",
-                },
-                {
-                  title: "Complete beginners",
-                  desc: "For anyone who wants patient guidance, clear foundations, and a practice that feels safe rather than intimidating.",
-                },
-                {
-                  title: "Women seeking balance",
-                  desc: "For those wanting supportive movement, breathwork, and steadier daily rhythms through different life phases.",
-                },
-                {
-                  title: "Mindful practitioners",
-                  desc: "For students who want more than exercise and are drawn to breath, philosophy, and a slower inward approach.",
-                },
-              ].map((item, i) => (
-                <FadeUp key={item.title} delay={i * 0.1}>
-                  <div className="h-full rounded-2xl border border-[#E8E4D8] bg-white p-5 sm:p-7 hover:border-[#A8BDC8] hover:shadow-md transition-all duration-300 active:scale-[0.99]">
-                    <h3
-                      className="text-[1.05rem] sm:text-[1.2rem] font-semibold text-[#1D3C52]"
-                      style={{ fontFamily: "'Playfair Display', serif" }}
-                    >
-                      {item.title}
-                    </h3>
-                    <p
-                      className="mt-2 sm:mt-3 text-[13px] sm:text-[13.5px] leading-[1.8] text-[#6B8A9A]"
-                      style={{ fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                      {item.desc}
-                    </p>
-                  </div>
-                </FadeUp>
+                [Award, "Internationally certified yoga teacher"],
+                [MapPin, "India · Online and in-person classes"],
+                [Users, "Small group batches · Hindi and English"],
+              ].map(([Icon, text]) => (
+                <div key={text} className="flex items-center gap-3">
+                  <Icon className="h-5 w-5 shrink-0 text-yoga-sage" />
+                  <span>{text}</span>
+                </div>
               ))}
             </div>
-          </div>
-        </div>
-      </section>
 
-      <section className="py-20 sm:py-24 bg-white border-y border-[#E8E4D8]">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 lg:px-20">
-          <FadeUp className="max-w-4xl">
-            <Label>Online Yoga Guidance</Label>
-            <h2
-              className="text-[clamp(1.9rem,4.5vw,3rem)] font-normal leading-[1.18] text-[#1D3C52]"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
-              Looking for online yoga classes, guided meditation, or pranayama support?
-            </h2>
-            <p
-              className="mt-5 text-[14.5px] sm:text-[15.5px] leading-[1.9] text-[#5A7485]"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              Yoga By Nandini supports students who want more than a workout. Sessions combine
-              traditional yoga practice, breathwork, meditation, and mindful lifestyle guidance
-              for people building a calmer, stronger routine at home.
-            </p>
-            <p
-              className="mt-4 text-[14.5px] sm:text-[15.5px] leading-[1.9] text-[#5A7485]"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              You can begin with beginner yoga classes, private online yoga sessions, meditation
-              coaching, or pranayama practices that help with stress, mobility, focus, sleep, and
-              consistency. The approach is personal, beginner-friendly, and rooted in Indian yogic
-              tradition rather than trend-driven routines.
-            </p>
-          </FadeUp>
-        </div>
-      </section>
-
-      {/* ═══════════════════════
-          GALLERY SECTION
-      ═══════════════════════ */}
-      <GallerySection />
-
-      {/* ═══════════════════════
-          TEACHING APPROACH (dark)
-      ═══════════════════════ */}
-      <section className="py-20 sm:py-24 bg-[#1D3C52]">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 md:px-12 lg:px-20">
-          <div className="grid grid-cols-1 lg:grid-cols-[0.8fr_1.2fr] gap-12 lg:gap-16 items-start">
-
-            <FadeUp>
-              <Label>Teaching Approach</Label>
-              <h2
-                className="text-[clamp(1.7rem,4.5vw,2.8rem)] font-normal leading-[1.2] text-[#E8F0F4]"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-              >
-                Rooted in tradition,
-                <br />
-                <em className="italic text-[#AFC3CD]">adapted for modern life</em>
-              </h2>
-            </FadeUp>
-
-            <div className="grid grid-cols-1 xs:grid-cols-2 gap-4 sm:gap-6">
-              {[
-                {
-                  title: "Calm progression",
-                  desc: "Sessions are built with patience, clear sequencing, and adaptations so progress feels steady rather than overwhelming.",
-                },
-                {
-                  title: "Breath before intensity",
-                  desc: "Breathwork and awareness stay central, helping students build a practice that supports the nervous system as much as the body.",
-                },
-                {
-                  title: "Personal guidance",
-                  desc: "The work is shaped around your lifestyle, goals, and experience level instead of using one fixed template for everyone.",
-                },
-                {
-                  title: "Practice you can keep",
-                  desc: "The focus is not perfection but consistency, so the benefits continue beyond the mat and into daily life.",
-                },
-              ].map((item, i) => (
-                <FadeUp key={item.title} delay={i * 0.1}>
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-5 sm:p-7 backdrop-blur-sm hover:border-white/20 transition-all duration-300">
-                    <h3
-                      className="text-[1rem] sm:text-[1.1rem] font-semibold text-[#F0F5F7]"
-                      style={{ fontFamily: "'Playfair Display', serif" }}
-                    >
-                      {item.title}
-                    </h3>
-                    <p
-                      className="mt-2 sm:mt-3 text-[13px] sm:text-[13.5px] leading-[1.75] text-[#B9CBD2]"
-                      style={{ fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                      {item.desc}
-                    </p>
-                  </div>
-                </FadeUp>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════
-          TESTIMONIALS
-      ═══════════════════════ */}
-      <TestimonialsSection />
-
-      {/* ═══════════════════════
-          MID CTA
-      ═══════════════════════ */}
-      <section className="py-16 sm:py-20 bg-[#F4F1E6]">
-        <div className="max-w-5xl mx-auto px-5 sm:px-8 md:px-12 text-center">
-          <FadeUp>
-            <Label>Ready to Begin</Label>
-            <h2
-              className="text-[clamp(1.7rem,4.5vw,2.8rem)] font-normal leading-[1.2] text-[#1D3C52]"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
-              Start with a conversation,
-              <br />
-              <em className="italic text-[#8BA5B5]">not pressure</em>
-            </h2>
-            <p
-              className="mt-4 sm:mt-5 text-[14.5px] sm:text-[15px] leading-[1.85] text-[#5A7485] max-w-2xl mx-auto"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              If you are unsure where to start, reach out with your goals, schedule, or questions.
-              We can find the right format for your practice together.
-            </p>
-
-            {/* CTA buttons — stack on mobile */}
-            <div className="mt-7 sm:mt-8 flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 sm:gap-4">
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link
-                to="/contact"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-[#1D3C52] px-7 py-3.5 text-[12px] sm:text-[13px] uppercase tracking-[0.1em] text-white shadow-lg shadow-[#1D3C52]/20 transition-all duration-300 hover:bg-[#2A5470] active:scale-95"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
+                to="/classes"
+                className="inline-flex min-h-[46px] items-center justify-center rounded-lg bg-yoga-ink px-6 text-sm font-medium text-yoga-paper transition hover:bg-black"
               >
-                Contact for Classes <span>→</span>
+                View Classes
               </Link>
               <Link
                 to="/about"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full border border-[#D8D2C4] px-7 py-3.5 text-[12px] sm:text-[13px] uppercase tracking-[0.1em] text-[#6B8A9A] transition-all duration-300 hover:border-[#1D3C52] hover:text-[#1D3C52] active:scale-95"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
+                className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-lg border border-yoga-sage px-6 text-sm font-medium text-yoga-sage transition hover:bg-yoga-sage hover:text-white"
               >
-                Learn More
+                Learn About Me <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.42, delay: 0.1, ease: "easeOut" }}
+            className="rounded-2xl border border-yoga-border bg-white p-4 shadow-sm md:p-5"
+          >
+            <div className="flex min-h-[280px] items-center justify-center rounded-xl bg-yoga-mist md:min-h-[420px]">
+              <img
+                src={yogaPose}
+                alt="Yoga posture illustration"
+                className="max-h-[330px] w-auto object-contain md:max-h-[450px]"
+                loading="eager"
+              />
+            </div>
+            <div className="flex flex-wrap gap-2 pt-4">
+              {["Hatha yoga", "Pranayama", "Breathwork", "Beginner-friendly"].map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full border border-yoga-border bg-yoga-paper px-3 py-1 text-[11px] text-yoga-ink/55"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <StatStrip />
+
+      <section className="border-b border-yoga-border px-5 py-14 md:px-10 md:py-24">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+          <FadeUp>
+            <SectionLabel>About</SectionLabel>
+            <h2 className="font-display text-3xl font-bold leading-tight md:text-5xl">
+              Who is <em className="text-yoga-clay">Nandini?</em>
+            </h2>
+          </FadeUp>
+          <FadeUp delay={0.05} className="rounded-2xl border border-yoga-border bg-white p-5 md:p-8">
+            <p className="text-sm leading-8 text-yoga-ink/70 md:text-base">
+              Nandini Singh is a certified yoga teacher with over 15 years of experience in Hatha
+              yoga and pranayama. She has trained in India and internationally, and has taught
+              hundreds of students across levels and ages.
+            </p>
+            <p className="mt-4 text-sm leading-8 text-yoga-ink/70 md:text-base">
+              Her teaching is unhurried, precise, and deeply rooted in traditional practice. The
+              work is not about performance; it is about consistency, understanding, and a practice
+              you can keep.
+            </p>
+            <Link
+              to="/about"
+              className="mt-6 inline-flex min-h-[44px] items-center gap-2 border-b border-yoga-ink text-sm font-medium text-yoga-ink"
+            >
+              Read full bio <ArrowRight className="h-4 w-4" />
+            </Link>
           </FadeUp>
         </div>
       </section>
 
-      {/* ═══════════════════════
-          BLOG TEASER
-      ═══════════════════════ */}
-      {latestPosts.length > 0 && (
-        <section className="py-20 sm:py-24 bg-[#FAFAF7]">
-          <div className="max-w-7xl mx-auto px-5 sm:px-8 md:px-12 lg:px-20">
+      <section className="border-b border-yoga-border px-5 py-14 md:px-10 md:py-24">
+        <div className="mx-auto max-w-7xl">
+          <FadeUp className="max-w-2xl">
+            <SectionLabel>Disciplines</SectionLabel>
+            <h2 className="font-display text-3xl font-bold leading-tight md:text-5xl">
+              What she <em className="text-yoga-clay">teaches</em>
+            </h2>
+            <p className="mt-4 text-sm leading-7 text-yoga-ink/55 md:text-base">
+              Rooted in classical tradition. Adapted thoughtfully for modern practitioners.
+            </p>
+          </FadeUp>
 
-            {/* Header row */}
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 mb-10 sm:mb-14">
+          <div className="mt-8 grid divide-y divide-yoga-border md:grid-cols-2 md:gap-x-10 md:divide-y-0">
+            {disciplines.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <FadeUp key={item.title} delay={index * 0.04}>
+                  <div className="flex gap-4 py-5 md:border-b md:border-yoga-border">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-yoga-border bg-yoga-mist">
+                      <Icon className="h-5 w-5 text-yoga-sage" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-yoga-ink">{item.title}</h3>
+                      <p className="mt-1 text-sm leading-7 text-yoga-ink/55">{item.text}</p>
+                    </div>
+                  </div>
+                </FadeUp>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-yoga-ink px-5 py-12 text-yoga-paper md:px-10 md:py-20">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+          <FadeUp>
+            <SectionLabel>Philosophy</SectionLabel>
+            <h2 className="font-display text-3xl font-bold leading-tight md:text-5xl">
+              How Nandini approaches teaching
+            </h2>
+          </FadeUp>
+          <div className="divide-y divide-white/10">
+            {[
+              ["01", "Practice over performance", "Consistency and understanding matter more than impressive poses."],
+              ["02", "Breath before posture", "Every class begins with awareness. The body follows when the breath leads."],
+              ["03", "Every body is different", "Modification and patience are built into the way she teaches."],
+            ].map(([num, title, text], index) => (
+              <FadeUp key={title} delay={index * 0.04}>
+                <div className="grid grid-cols-[2.5rem_1fr] gap-4 py-5">
+                  <span className="font-display text-sm font-bold text-white/20">{num}</span>
+                  <div>
+                    <h3 className="font-medium text-yoga-paper/80">{title}</h3>
+                    <p className="mt-1 text-sm leading-7 text-white/35">{text}</p>
+                  </div>
+                </div>
+              </FadeUp>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <GallerySection />
+      <TestimonialsSection />
+
+      {latestPosts.length > 0 && (
+        <section className="border-y border-yoga-border px-5 py-14 md:px-10 md:py-24">
+          <div className="mx-auto max-w-7xl">
+            <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
               <FadeUp>
-                <Label>From the Blog</Label>
-                <h2
-                  className="text-[clamp(1.7rem,4.5vw,2.8rem)] font-normal leading-[1.2] text-[#1D3C52]"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                >
-                  Real notes on
-                  <br />
-                  <em className="italic text-[#8BA5B5]">practice & living</em>
+                <SectionLabel>Writing</SectionLabel>
+                <h2 className="font-display text-3xl font-bold leading-tight md:text-5xl">
+                  From the <em className="text-yoga-clay">blog</em>
                 </h2>
               </FadeUp>
-              <FadeUp>
-                <Link
-                  to="/blog"
-                  className="inline-flex items-center gap-2 text-[11px] sm:text-[12px] tracking-[0.12em] uppercase text-[#6B8A9A] hover:text-[#1D3C52] transition-colors font-medium border-b border-[#C5BCA8] pb-1 self-start sm:self-auto"
-                  style={{ fontFamily: "'DM Sans', sans-serif" }}
-                >
-                  All Posts →
-                </Link>
-              </FadeUp>
+              <Link
+                to="/blog"
+                className="inline-flex min-h-[44px] items-center gap-2 self-start border-b border-yoga-ink text-sm font-medium"
+              >
+                All writings <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
 
-            {/* Blog cards — single col on mobile, 3-col on md+ */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-8">
-              {latestPosts.map((post, i) => {
+            <div className="mt-8 divide-y divide-yoga-border">
+              {latestPosts.map((post, index) => {
                 const postDate = post.date?.toDate?.()
-                  ? post.date.toDate().toLocaleDateString("en-IN", { month: "short", year: "numeric" })
+                  ? post.date.toDate().toLocaleDateString("en-IN", { month: "long", year: "numeric" })
                   : "";
-                const preview =
-                  post.desc || post.excerpt || "Read the latest reflections on yoga, breath, and mindful living.";
 
                 return (
-                  <FadeUp key={post.id} delay={i * 0.12}>
-                    <Link to={`/blog/${post.id}`} className="group block h-full">
-                      <div className="h-full bg-white border border-[#E8E4D8] rounded-2xl p-5 sm:p-7 hover:border-[#A8BDC8] hover:shadow-lg transition-all duration-400 active:scale-[0.99]">
-                        <div className="flex items-center gap-3 mb-4 sm:mb-5">
-                          {post.category && (
-                            <span
-                              className="text-[9px] sm:text-[10px] tracking-[0.18em] uppercase text-white bg-[#1D3C52] px-3 py-1 rounded-full"
-                              style={{ fontFamily: "'DM Sans', sans-serif" }}
-                            >
-                              {post.category}
-                            </span>
-                          )}
-                          {postDate && (
-                            <span
-                              className="text-[11px] text-[#A09880]"
-                              style={{ fontFamily: "'DM Sans', sans-serif" }}
-                            >
-                              {postDate}
-                            </span>
-                          )}
-                        </div>
-                        <h3
-                          className="text-[15px] sm:text-[17px] font-semibold text-[#1D3C52] leading-snug group-hover:text-[#2A5470] transition-colors"
-                          style={{ fontFamily: "'Playfair Display', serif" }}
-                        >
-                          {post.title || "Untitled Post"}
-                        </h3>
-                        <p
-                          className="mt-2 sm:mt-3 text-[13px] sm:text-[13.5px] leading-[1.75] text-[#6B8A9A]"
-                          style={{ fontFamily: "'DM Sans', sans-serif" }}
-                        >
-                          {preview.length > 140 ? `${preview.slice(0, 140)}...` : preview}
-                        </p>
-                        <span
-                          className="inline-block mt-4 sm:mt-5 text-[12px] text-[#8BA5B5] group-hover:text-[#1D3C52] transition-colors"
-                          style={{ fontFamily: "'DM Sans', sans-serif" }}
-                        >
-                          Read more →
+                  <Link
+                    key={post.id}
+                    to={`/blog/${post.id}`}
+                    className="grid min-h-[72px] grid-cols-[3rem_1fr] gap-4 py-5 transition hover:text-yoga-sage md:grid-cols-[4rem_1fr_auto]"
+                  >
+                    <span className="font-display text-3xl font-bold text-yoga-border">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span>
+                      {post.category && (
+                        <span className="mb-1 block text-[11px] font-medium uppercase tracking-[0.08em] text-yoga-sage">
+                          {post.category}
                         </span>
-                      </div>
-                    </Link>
-                  </FadeUp>
+                      )}
+                      <span className="block text-sm font-medium leading-6 md:text-base">
+                        {post.title || "Untitled Post"}
+                      </span>
+                    </span>
+                    {postDate && (
+                      <span className="col-start-2 text-xs text-yoga-ink/40 md:col-start-auto md:self-center">
+                        {postDate}
+                      </span>
+                    )}
+                  </Link>
                 );
               })}
             </div>
@@ -838,13 +377,28 @@ const Home = () => {
         </section>
       )}
 
-      {/* ═══════════════════════
-          FAQ + NEWSLETTER
-      ═══════════════════════ */}
-      <FAQSection />
       <NewsletterSection />
+      <FAQSection />
 
-    </div>
+      <section className="border-t border-yoga-border px-5 py-14 md:px-10 md:py-20">
+        <div className="mx-auto max-w-3xl">
+          <SectionLabel>Contact</SectionLabel>
+          <h2 className="font-display text-3xl font-bold leading-tight md:text-5xl">
+            Get in <em className="text-yoga-clay">touch</em>
+          </h2>
+          <p className="mt-4 text-sm leading-7 text-yoga-ink/55 md:text-base">
+            Have a question about yoga, her work, or current batches? Write directly. Nandini
+            responds personally.
+          </p>
+          <Link
+            to="/contact"
+            className="mt-7 inline-flex min-h-[46px] items-center justify-center rounded-lg border border-yoga-sage px-6 text-sm font-medium text-yoga-sage transition hover:bg-yoga-sage hover:text-white"
+          >
+            Go to contact page
+          </Link>
+        </div>
+      </section>
+    </main>
   );
 };
 

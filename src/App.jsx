@@ -11,7 +11,7 @@ import AdminPage from "./pages/AdminPage";
 import About from "./pages/About";
 import BlogDetailPage from "./pages/BlogDetailPage";
 import GalleryPage from "./pages/GalleryPage";
-import Meditation from "./pages/Meditation";
+import Classes from "./pages/Classes";
 import NotFound from "./pages/NotFound";
 
 const App = () => {
@@ -35,6 +35,15 @@ const App = () => {
           element={
             <MainLayout>
               <About />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/classes"
+          element={
+            <MainLayout>
+              <Classes />
             </MainLayout>
           }
         />
@@ -71,14 +80,6 @@ const App = () => {
           element={
             <MainLayout>
               <GalleryPage />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/meditation"
-          element={
-            <MainLayout>
-              <Meditation />
             </MainLayout>
           }
         />

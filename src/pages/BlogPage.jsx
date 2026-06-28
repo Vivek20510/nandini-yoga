@@ -59,7 +59,7 @@ const BlogPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const blogDescription =
-    "Read yoga, meditation, pranayama, Ayurveda, and mindful living articles from Yoga By Nandini. Practical guidance for building a calmer, stronger daily practice.";
+    "Read yoga, pranayama, Ayurveda, and mindful living articles from Yoga By Nandini. Practical guidance for building a calmer, stronger daily practice.";
 
   const blogSchema = {
     "@context": "https://schema.org",
@@ -126,7 +126,7 @@ const BlogPage = () => {
       transition={{ duration: 0.5 }}
     >
       <SEO
-        title="Yoga, Meditation and Pranayama Blog"
+        title="Yoga and Pranayama Blog"
         description={blogDescription}
         canonicalPath="/blog"
         schema={blogSchema}
@@ -164,7 +164,7 @@ const BlogPage = () => {
                 className="mt-5 text-[15px] leading-[1.85] text-[#5A7485] max-w-xl"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
-                Articles on yoga philosophy, breathwork, meditation, Ayurveda, and the quiet
+                Articles on yoga philosophy, breathwork, Ayurveda, and the quiet
                 discipline of building a life rooted in practice.
               </motion.p>
             </div>

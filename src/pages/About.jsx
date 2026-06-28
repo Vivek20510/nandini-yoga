@@ -31,7 +31,7 @@ const PHILOSOPHY = [
   {
     icon: "🌿",
     title: "Holistic Healing",
-    body: "A balanced weaving of yoga, Ayurveda, and meditation — addressing not just the physical body but the whole self.",
+    body: "A balanced weaving of yoga, Ayurveda, and pranayama — addressing not just the physical body but the whole self.",
   },
   {
     icon: "🪷",
@@ -50,7 +50,7 @@ const About = () => {
   const heroRef = useRef(null);
   useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const aboutDescription =
-    "Learn about Nandini Singh, a certified yoga and meditation teacher with 15+ years of experience in Hatha yoga, pranayama, Ayurveda, and mindful living guidance.";
+    "Learn about Nandini Singh, a certified yoga teacher with 15+ years of experience in Hatha yoga, pranayama, Ayurveda, and mindful living guidance.";
 
   const aboutSchema = {
     "@context": "https://schema.org",
@@ -58,7 +58,7 @@ const About = () => {
     name: PERSON_NAME,
     image: SITE_IMAGE,
     url: `${SITE_URL}/about`,
-    jobTitle: "Yoga and Meditation Teacher",
+    jobTitle: "Yoga Teacher",
     worksFor: {
       "@type": "Organization",
       name: SITE_NAME,
@@ -431,7 +431,7 @@ const About = () => {
                   <span style={{ fontStyle: "italic" }}>Open to the world.</span>
                 </h2>
                 <p className="about-bio-text">
-                  Nandini Singh is a globally certified yoga and meditation teacher whose path began in the sacred valleys of Rishikesh. Her teaching draws from the living roots of Indian philosophy — Patanjali's Yoga Sutras, Ayurvedic science, and the subtle art of pranayama.
+                  Nandini Singh is a globally certified yoga teacher whose path began in the sacred valleys of Rishikesh. Her teaching draws from the living roots of Indian philosophy — Patanjali's Yoga Sutras, Ayurvedic science, and the subtle art of pranayama.
                 </p>
                 <p className="about-bio-text" style={{ marginTop: 18 }}>
                   Over fifteen years, she has guided thousands of students — from beginners discovering their first breath to advanced practitioners deepening long-standing practices. Her approach is unhurried, precise, and deeply personal.

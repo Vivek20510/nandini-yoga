@@ -7,11 +7,24 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Inter"', 'sans-serif'],
-        serif: ['"Playfair Display"', 'serif'],
+        sans: ['"DM Sans"', "system-ui", "sans-serif"],
+        body: ['"DM Sans"', "system-ui", "sans-serif"],
+        serif: ['"Playfair Display"', "Georgia", "serif"],
+        display: ['"Playfair Display"', "Georgia", "serif"],
       },
       colors: {
         yoga: {
+          paper: "#F6F3ED",
+          ink: "#0E0E0E",
+          sage: "#5C7A5C",
+          sageLight: "#A8C5A0",
+          clay: "#B5714A",
+          mist: "#EAE6DC",
+          border: "#E0DBD0",
+          linen: "#F5F0E8",
+          charcoal: "#2C2C2C",
+          cream: "#FFFDF7",
+          deepSage: "#4A6B4E",
           base: "#F8F5F2",        // Warm Linen – Background
           dark: "#3E3E3E",        // Deep Charcoal – Primary text
           accent: "#A9B9A4",      // Sage Green – Buttons, icons

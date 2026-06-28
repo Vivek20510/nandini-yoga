@@ -30,3 +30,7 @@ dist-ssr
 *.sw?
 
 .vercel
+
+# Project documentation (do not commit)
+PROJECT_DOCS.md
+REFACTOR_PLAN.md

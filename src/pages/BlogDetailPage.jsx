@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
-import ReactPlayer from "react-player";
 import { motion, AnimatePresence } from "framer-motion";
 import { Share2, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import SEO from "../components/SEO";
@@ -501,13 +500,23 @@ const BlogDetailPage = () => {
                           transition={{ duration: 0.4 }}
                         >
                           {media[activeMedia]?.type === "video" ? (
-                            <ReactPlayer
-                              url={media[activeMedia].url}
-                              controls
-                              width="100%"
-                              height="100%"
-                              style={{ aspectRatio: "16/9" }}
-                            />
+                            <a
+                              href={media[activeMedia].url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                aspectRatio: "16/9",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                color: "var(--cream)",
+                                textTransform: "uppercase",
+                                letterSpacing: "0.12em",
+                                fontSize: "0.78rem",
+                              }}
+                            >
+                              Open video
+                            </a>
                           ) : (
                             <img
                               src={media[activeMedia]?.url}

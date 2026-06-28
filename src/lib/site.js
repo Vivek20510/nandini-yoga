@@ -4,7 +4,7 @@ export const SITE_NAME = "Yoga By Nandini";
 export const SITE_URL = (import.meta.env.VITE_SITE_URL || FALLBACK_SITE_URL).replace(/\/$/, "");
 export const SITE_IMAGE = `${SITE_URL}/logo.png`;
 export const SITE_DESCRIPTION =
-  "Online yoga, meditation, pranayama, and mindful living guidance with Nandini Singh, a certified yoga teacher with 15+ years of teaching experience.";
+  "Hatha yoga, pranayama, and small-group batch classes with Nandini Singh, a certified yoga teacher with 15+ years of teaching experience.";
 
 export const PERSON_NAME = "Nandini Singh";
 

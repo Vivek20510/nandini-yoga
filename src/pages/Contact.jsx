@@ -40,7 +40,7 @@ const Contact = () => {
   const [reason,    setReason]    = useState("General Enquiry");
   const [message,   setMessage]   = useState(MESSAGE_SUGGESTIONS["General Enquiry"]);
   const contactDescription =
-    "Contact Yoga By Nandini for online yoga classes, private sessions, meditation guidance, pranayama support, retreats, and wellness collaborations.";
+    "Contact Yoga By Nandini for online yoga classes, private sessions, pranayama support, retreats, and wellness collaborations.";
 
   const contactSchema = {
     "@context": "https://schema.org",
@@ -76,7 +76,7 @@ const Contact = () => {
   return (
     <>
       <SEO
-        title="Contact for Online Yoga Classes and Meditation"
+        title="Contact for Online Yoga Classes"
         description={contactDescription}
         canonicalPath="/contact"
         schema={contactSchema}

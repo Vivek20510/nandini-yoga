@@ -1,5 +1,4 @@
 import React, { useState, useRef } from "react";
-import ReactPlayer from "react-player";
 import { Share2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getOrderedBlogMedia } from "../lib/blogMedia";
@@ -247,7 +246,14 @@ const BlogPostCard = ({ post, featured = false }) => {
             {orderedMedia.map((item, i) => (
               <div key={i} className="bpc-media-slide">
                 {item.type === "video" ? (
-                  <ReactPlayer url={item.url} controls width="100%" height="100%" />
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bpc-media-img flex aspect-video items-center justify-center bg-[#2C2417] text-sm uppercase tracking-[0.12em] text-[#FDFAF5]"
+                  >
+                    Open video
+                  </a>
                 ) : (
                   <img
                     src={item.url}
