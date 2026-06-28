@@ -104,7 +104,7 @@ const Home = () => {
   }, []);
 
   const homeDescription =
-    "Learn Hatha yoga and pranayama with Nandini Singh, an internationally certified yoga teacher with 15+ years of experience teaching small group classes.";
+    "Learn Hatha yoga and pranayama with Nandini Singh, an internationally certified yoga teacher with 15+ years of experience teaching group classes.";
 
   const homeSchema = [
     {
@@ -173,7 +173,7 @@ const Home = () => {
               {[
                 [Award, "Internationally certified yoga teacher"],
                 [MapPin, "India · Online and in-person classes"],
-                [Users, "Small group batches · Hindi and English"],
+                [Users, " batches · Hindi and English"],
               ].map(([Icon, text]) => (
                 <div key={text} className="flex items-center gap-3">
                   <Icon className="h-5 w-5 shrink-0 text-yoga-sage" />
