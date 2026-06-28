@@ -1,56 +1,97 @@
-import React, { useRef } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll } from "framer-motion";
+import { motion } from "framer-motion";
+import { Award, BookOpen, Globe, Heart, MapPin, Users } from "lucide-react";
 import SEO from "../components/SEO";
 import { PERSON_NAME, SITE_IMAGE, SITE_NAME, SITE_URL } from "../lib/site";
 
-/* ── ANIMATION VARIANTS ── */
-const fadeUp = {
-  hidden: { opacity: 0, y: 32 },
-  show: (i = 0) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.75, ease: [0.22, 1, 0.36, 1], delay: i * 0.1 },
-  }),
-};
-const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.12 } } };
+/* ── Shared animation wrapper (same as Home) ── */
+const FadeUp = ({ children, className = "", delay = 0 }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 18 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-48px" }}
+    transition={{ duration: 0.38, delay, ease: "easeOut" }}
+    className={className}
+  >
+    {children}
+  </motion.div>
+);
 
+const SectionLabel = ({ children, light = false }) => (
+  <div
+    className={`mb-4 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] ${
+      light ? "text-white/40" : "text-yoga-sage"
+    }`}
+  >
+    <span className={`h-px w-5 ${light ? "bg-white/30" : "bg-yoga-sage"}`} />
+    {children}
+  </div>
+);
+
+/* ── Static data ── */
 const TIMELINE = [
-  { year: "2008", event: "Began spiritual studies in Rishikesh at the foothills of the Himalayas." },
-  { year: "2012", event: "Certified in Hatha Yoga and Ayurvedic healing at Patanjali Yogpeeth." },
-  { year: "2016", event: "Launched international teaching — workshops across India, Europe & Southeast Asia." },
-  { year: "2020", event: "Completed advanced pranayama training with Isha Foundation." },
-  { year: "2023", event: "Founded Yoga by Nandini — offering personalised programs worldwide." },
-];
-
-const PHILOSOPHY = [
   {
-    icon: "🌬",
-    title: "Mindful Movement",
-    body: "Each class integrates breath with movement to cultivate a state of presence — where the body and mind arrive at the same moment.",
+    year: "2008",
+    event: "Began studying Hatha yoga in Rishikesh under senior Iyengar teachers.",
   },
   {
-    icon: "🌿",
-    title: "Holistic Healing",
-    body: "A balanced weaving of yoga, Ayurveda, and pranayama — addressing not just the physical body but the whole self.",
+    year: "2012",
+    event: "Certified at Patanjali Yogpeeth — Hatha yoga and foundational pranayama.",
   },
   {
-    icon: "🪷",
-    title: "Personal Growth",
-    body: "Every student carries a different story. Nandini's teaching meets each person where they are, and guides them gently forward.",
+    year: "2016",
+    event: "Completed advanced pranayama training with Isha Foundation, Coimbatore.",
+  },
+  {
+    year: "2019",
+    event: "Awarded 500-hour international certification through Om Yoga International, Rishikesh.",
+  },
+  {
+    year: "2023",
+    event: "Founded Yoga by Nandini — small-group batch classes in India and online.",
   },
 ];
 
 const CERTIFICATIONS = [
-  { org: "Patanjali Yogpeeth", focus: "Ayurveda & Pranayama", country: "Haridwar, India" },
-  { org: "Isha Foundation", focus: "Inner Engineering & Hatha Yoga", country: "Coimbatore, India" },
-  { org: "Om Yoga International", focus: "500-hr Teacher Training", country: "Rishikesh, India" },
+  {
+    org: "Patanjali Yogpeeth",
+    focus: "Hatha Yoga & Ayurvedic Foundation",
+    location: "Haridwar, India",
+  },
+  {
+    org: "Isha Foundation",
+    focus: "Inner Engineering & Advanced Pranayama",
+    location: "Coimbatore, India",
+  },
+  {
+    org: "Om Yoga International",
+    focus: "500-hr Teacher Training",
+    location: "Rishikesh, India",
+  },
+];
+
+const PHILOSOPHY = [
+  {
+    icon: Heart,
+    title: "Practice over performance",
+    body: "Consistency and understanding matter more than impressive postures. Showing up daily — even briefly — is the practice.",
+  },
+  {
+    icon: BookOpen,
+    title: "Breath before posture",
+    body: "Every class starts with awareness. The body follows naturally once the breath is grounded and steady.",
+  },
+  {
+    icon: Users,
+    title: "Every body is different",
+    body: "Modification and patience are built into the way Nandini teaches. There is no standard body and no standard pace.",
+  },
 ];
 
 const About = () => {
-  const heroRef = useRef(null);
-  useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const aboutDescription =
-    "Learn about Nandini Singh, a certified yoga teacher with 15+ years of experience in Hatha yoga, pranayama, Ayurveda, and mindful living guidance.";
+    "Learn about Nandini Singh — certified yoga teacher with 15+ years of experience in Hatha yoga and pranayama, teaching small-group batch classes in India and online.";
 
   const aboutSchema = {
     "@context": "https://schema.org",
@@ -59,494 +100,235 @@ const About = () => {
     image: SITE_IMAGE,
     url: `${SITE_URL}/about`,
     jobTitle: "Yoga Teacher",
-    worksFor: {
-      "@type": "Organization",
-      name: SITE_NAME,
-    },
+    worksFor: { "@type": "Organization", name: SITE_NAME },
     description: aboutDescription,
   };
 
   return (
-    <>
+    <main className="overflow-x-hidden bg-yoga-paper font-body text-yoga-ink">
       <SEO
-        title="About Nandini Singh"
+        title="About Nandini Singh | Yoga Teacher"
         description={aboutDescription}
         canonicalPath="/about"
         schema={aboutSchema}
       />
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@300;400;500&display=swap');
 
-        :root {
-          --cream:  #F7F3EC;
-          --sand:   #EDE5D4;
-          --bark:   #2C2417;
-          --moss:   #4A5C3F;
-          --terra:  #B8724A;
-          --gold:   #C9A058;
-          --white:  #FDFAF5;
-          --font-display: 'Cormorant Garamond', Georgia, serif;
-          --font-body:    'Jost', sans-serif;
-        }
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      {/* ── HERO ── */}
+      <section className="border-b border-yoga-border px-5 pb-14 pt-32 md:px-10 md:pb-20 md:pt-36">
+        <div className="mx-auto max-w-7xl">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.42, ease: "easeOut" }}
+          >
+            <SectionLabel>About</SectionLabel>
+            <h1 className="max-w-3xl font-display text-[42px] font-bold leading-[1.08] text-yoga-ink sm:text-6xl lg:text-7xl">
+              The teacher{" "}
+              <em className="text-yoga-clay">behind the mat.</em>
+            </h1>
+          </motion.div>
 
-        .about-root { background: var(--cream); font-family: var(--font-body); }
-
-        /* ── HERO ── */
-        .about-hero {
-          background: var(--white);
-          min-height: 85vh;
-          display: flex; flex-direction: column; justify-content: flex-end;
-          padding: 120px 64px 80px;
-          position: relative; overflow: hidden;
-          border-bottom: 1px solid rgba(44,36,23,0.07);
-        }
-        .about-hero::before {
-          content: '';
-          position: absolute;
-          width: 700px; height: 700px; border-radius: 50%;
-          background: radial-gradient(circle, rgba(74,92,63,0.07) 0%, transparent 70%);
-          top: -15%; left: -10%; pointer-events: none;
-        }
-        .about-hero::after {
-          content: '';
-          position: absolute;
-          width: 500px; height: 500px; border-radius: 50%;
-          background: radial-gradient(circle, rgba(201,160,88,0.09) 0%, transparent 70%);
-          bottom: 0; right: -8%; pointer-events: none;
-        }
-        .about-hero-inner { max-width: 1200px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
-        .about-hero-grid {
-          display: grid; grid-template-columns: 1fr 1fr;
-          gap: 80px; align-items: end;
-        }
-
-        .section-label {
-          display: flex; align-items: center; gap: 14px;
-          font-family: var(--font-body); font-size: 0.65rem;
-          letter-spacing: 0.22em; text-transform: uppercase;
-          color: var(--terra); margin-bottom: 20px;
-        }
-        .section-label::after { content: ''; width: 48px; height: 1px; background: rgba(184,114,74,0.3); }
-
-        .about-hero-title {
-          font-family: var(--font-display);
-          font-size: clamp(3rem, 6vw, 5.5rem);
-          font-weight: 300; line-height: 1.08; letter-spacing: -0.01em;
-          color: var(--bark);
-        }
-        .about-hero-title em { font-style: italic; color: var(--moss); }
-
-        .about-hero-quote {
-          background: var(--sand);
-          border-radius: 12px; padding: 36px;
-          border-left: 3px solid var(--gold);
-          position: relative;
-        }
-        .about-hero-quote::before {
-          content: '"';
-          font-family: var(--font-display);
-          font-size: 8rem; line-height: 0.6;
-          position: absolute; top: 20px; left: 20px;
-          color: rgba(201,160,88,0.15); pointer-events: none;
-        }
-        .about-hero-quote p {
-          font-family: var(--font-display);
-          font-size: 1.25rem; font-style: italic;
-          line-height: 1.6; color: rgba(44,36,23,0.7);
-          position: relative; z-index: 1;
-        }
-        .about-hero-quote cite {
-          display: block; margin-top: 14px;
-          font-family: var(--font-body); font-size: 0.72rem;
-          letter-spacing: 0.12em; text-transform: uppercase;
-          color: rgba(44,36,23,0.35); font-style: normal;
-        }
-
-        /* ── BIO SECTION ── */
-        .about-bio {
-          background: var(--sand);
-          padding: 100px 64px;
-          border-bottom: 1px solid rgba(44,36,23,0.07);
-        }
-        .about-bio-inner {
-          max-width: 1200px; margin: 0 auto;
-          display: grid; grid-template-columns: 1fr 1.1fr;
-          gap: 80px; align-items: start;
-        }
-
-        .about-portrait {
-          position: relative;
-        }
-        .about-portrait-card {
-          background: var(--white);
-          border: 1px solid rgba(44,36,23,0.08);
-          border-radius: 16px; overflow: hidden;
-          aspect-ratio: 3/4;
-          display: flex; align-items: center; justify-content: center;
-          position: relative;
-        }
-        .about-portrait-card::after {
-          content: '';
-          position: absolute; bottom: 0; left: 0; right: 0; height: 5px;
-          background: linear-gradient(90deg, var(--gold), var(--terra));
-        }
-        .about-portrait-placeholder {
-          display: flex; flex-direction: column;
-          align-items: center; justify-content: center; gap: 12px;
-        }
-
-        /* Stats strip */
-        .about-stats {
-          display: grid; grid-template-columns: repeat(3, 1fr);
-          gap: 1px; background: rgba(44,36,23,0.1);
-          border-radius: 10px; overflow: hidden; margin-top: 16px;
-        }
-        .about-stat {
-          background: var(--white); padding: 18px 12px; text-align: center;
-        }
-        .about-stat-num {
-          font-family: var(--font-display);
-          font-size: 1.8rem; font-weight: 600; color: var(--terra);
-        }
-        .about-stat-label {
-          font-family: var(--font-body); font-size: 0.65rem;
-          letter-spacing: 0.14em; text-transform: uppercase;
-          color: rgba(44,36,23,0.4); margin-top: 3px;
-        }
-
-        .about-bio-text {
-          font-family: var(--font-body); font-size: 1rem;
-          line-height: 1.85; color: rgba(44,36,23,0.65);
-        }
-        .about-bio-text + .about-bio-text { margin-top: 20px; }
-
-        /* cert tags */
-        .cert-card {
-          background: var(--white);
-          border: 1px solid rgba(44,36,23,0.07);
-          border-radius: 10px; padding: 20px 24px;
-          display: flex; align-items: flex-start; gap: 16px;
-          transition: box-shadow 0.3s, transform 0.3s;
-        }
-        .cert-card:hover { box-shadow: 0 12px 32px rgba(44,36,23,0.08); transform: translateY(-2px); }
-        .cert-num {
-          font-family: var(--font-display); font-size: 1.4rem;
-          font-weight: 600; color: rgba(201,160,88,0.4);
-          line-height: 1; flex-shrink: 0; min-width: 28px;
-        }
-        .cert-org {
-          font-family: var(--font-display); font-size: 1.05rem;
-          font-weight: 600; color: var(--bark); margin-bottom: 4px;
-        }
-        .cert-focus {
-          font-family: var(--font-body); font-size: 0.8rem;
-          color: rgba(44,36,23,0.5); letter-spacing: 0.03em;
-        }
-        .cert-country {
-          font-family: var(--font-body); font-size: 0.65rem;
-          letter-spacing: 0.12em; text-transform: uppercase;
-          color: var(--terra); margin-top: 4px;
-        }
-
-        /* ── TIMELINE ── */
-        .about-timeline {
-          background: var(--white);
-          padding: 100px 64px;
-          border-bottom: 1px solid rgba(44,36,23,0.07);
-        }
-        .about-timeline-inner { max-width: 800px; margin: 0 auto; }
-        .timeline-track {
-          position: relative; margin-top: 56px;
-          padding-left: 40px;
-          border-left: 1px solid rgba(44,36,23,0.1);
-        }
-        .timeline-item {
-          position: relative; margin-bottom: 48px;
-        }
-        .timeline-item:last-child { margin-bottom: 0; }
-        .timeline-dot {
-          position: absolute; left: -47px; top: 4px;
-          width: 12px; height: 12px; border-radius: 50%;
-          background: var(--gold);
-          border: 2px solid var(--white);
-          box-shadow: 0 0 0 3px rgba(201,160,88,0.2);
-        }
-        .timeline-year {
-          font-family: var(--font-display); font-size: 1.5rem;
-          font-weight: 600; color: var(--terra); margin-bottom: 6px;
-        }
-        .timeline-event {
-          font-family: var(--font-body); font-size: 0.95rem;
-          line-height: 1.75; color: rgba(44,36,23,0.6);
-        }
-
-        /* ── PHILOSOPHY ── */
-        .about-philosophy {
-          background: var(--bark);
-          padding: 100px 64px;
-          border-bottom: 1px solid rgba(44,36,23,0.07);
-        }
-        .about-philosophy-inner { max-width: 1200px; margin: 0 auto; }
-        .phil-grid {
-          display: grid; grid-template-columns: repeat(3, 1fr);
-          gap: 24px; margin-top: 56px;
-        }
-        .phil-card {
-          background: rgba(247,243,236,0.05);
-          border: 1px solid rgba(247,243,236,0.08);
-          border-radius: 14px; padding: 40px 32px;
-          transition: background 0.3s, transform 0.3s;
-        }
-        .phil-card:hover { background: rgba(247,243,236,0.09); transform: translateY(-4px); }
-        .phil-icon { font-size: 2rem; margin-bottom: 20px; }
-        .phil-title {
-          font-family: var(--font-display); font-size: 1.4rem;
-          font-weight: 600; color: var(--cream); margin-bottom: 12px;
-        }
-        .phil-body {
-          font-family: var(--font-body); font-size: 0.875rem;
-          line-height: 1.8; color: rgba(247,243,236,0.5);
-        }
-
-        /* ── CLOSING QUOTE ── */
-        .about-closing {
-          background: var(--cream);
-          padding: 100px 64px;
-          text-align: center;
-        }
-        .about-closing-inner { max-width: 700px; margin: 0 auto; }
-        .about-closing-quote {
-          font-family: var(--font-display);
-          font-size: clamp(1.4rem, 3vw, 2rem);
-          font-style: italic; font-weight: 400;
-          line-height: 1.5; color: rgba(44,36,23,0.7);
-          margin-bottom: 40px;
-        }
-        .about-cta-btn {
-          display: inline-flex; align-items: center; gap: 8px;
-          font-family: var(--font-body); font-size: 0.75rem;
-          font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
-          padding: 14px 30px; border-radius: 7px;
-          background: var(--bark); color: var(--cream);
-          text-decoration: none;
-          transition: background 0.22s, transform 0.18s;
-        }
-        .about-cta-btn:hover { background: #1a160e; transform: translateY(-1px); }
-
-        @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .spin-slow { animation: spin-slow 28s linear infinite; }
-
-        @media (max-width: 900px) {
-          .about-hero { padding: 100px 28px 60px; min-height: auto; }
-          .about-hero-grid { grid-template-columns: 1fr; gap: 36px; }
-          .about-bio { padding: 72px 28px; }
-          .about-bio-inner { grid-template-columns: 1fr; gap: 48px; }
-          .about-timeline { padding: 72px 28px; }
-          .about-philosophy { padding: 72px 28px; }
-          .phil-grid { grid-template-columns: 1fr; }
-          .about-closing { padding: 72px 28px; }
-        }
-      `}</style>
-
-      <motion.div
-        className="about-root"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.45 }}
-      >
-
-        {/* ── HERO ── */}
-        <section className="about-hero" ref={heroRef}>
-          {/* Decorative ring */}
-          <div className="spin-slow" style={{ position: "absolute", top: "10%", right: "5%", width: 200, height: 200, borderRadius: "50%", border: "1px dashed rgba(44,36,23,0.08)", pointerEvents: "none", zIndex: 0 }} />
-
-          <div className="about-hero-inner">
-            <motion.div className="about-hero-grid" variants={stagger} initial="hidden" animate="show">
-
-              {/* Left */}
-              <motion.div variants={fadeUp}>
-                <div className="section-label">About</div>
-                <h1 className="about-hero-title">
-                  The woman <br />
-                  <em>behind the mat.</em>
-                </h1>
-                <p style={{ fontFamily: "var(--font-body)", fontSize: "0.95rem", lineHeight: 1.8, color: "rgba(44,36,23,0.5)", marginTop: 20, maxWidth: 420 }}>
-                  Fifteen years of practice, thousands of students, and one unwavering belief — that stillness is the foundation of a meaningful life.
-                </p>
-              </motion.div>
-
-              {/* Right — pull quote */}
-              <motion.div variants={fadeUp} custom={1}>
-                <div className="about-hero-quote">
-                  <p>"Yoga is not about touching your toes. It is what you learn on the way down."</p>
-                  <cite>— Jigar Gor</cite>
-                </div>
-              </motion.div>
-
-            </motion.div>
-          </div>
-        </section>
-
-        {/* ── BIO + CERTIFICATIONS ── */}
-        <section className="about-bio">
-          <div className="about-bio-inner">
-
-            {/* Left — portrait + stats */}
+          <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_1.1fr] lg:items-start">
+            {/* Portrait card */}
             <motion.div
-              className="about-portrait"
-              initial={{ opacity: 0, x: -24 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.42, delay: 0.08, ease: "easeOut" }}
+              className="rounded-2xl border border-yoga-border bg-white p-4 shadow-sm md:p-5"
             >
-              <div className="about-portrait-card">
-                <div className="about-portrait-placeholder">
-                  <span style={{ fontSize: "5rem" }}>🪷</span>
-                  <span style={{ fontFamily: "var(--font-display)", fontSize: "1rem", fontStyle: "italic", color: "rgba(44,36,23,0.3)" }}>Nandini Singh</span>
-                </div>
+              <div className="flex min-h-[280px] items-center justify-center rounded-xl bg-yoga-mist md:min-h-[380px]">
+                {/* Swap for <img src={yogaPose3} ...> when a real photo is available */}
+                <span className="font-display text-6xl">🪷</span>
               </div>
-              <div className="about-stats">
-                {[["15+", "Years"], ["3K+", "Students"], ["50+", "Workshops"]].map(([num, label]) => (
-                  <div key={label} className="about-stat">
-                    <p className="about-stat-num">{num}</p>
-                    <p className="about-stat-label">{label}</p>
+
+              {/* Stats strip */}
+              <div className="mt-4 grid grid-cols-3 divide-x divide-yoga-border rounded-xl border border-yoga-border bg-yoga-paper">
+                {[
+                  ["15+", "Years teaching"],
+                  ["500+", "Students"],
+                  ["Intl.", "Certified"],
+                ].map(([value, label]) => (
+                  <div key={label} className="px-3 py-4 text-center">
+                    <span className="block font-display text-2xl font-bold text-yoga-clay">
+                      {value}
+                    </span>
+                    <span className="mt-0.5 block text-[10px] leading-snug text-yoga-ink/40">
+                      {label}
+                    </span>
                   </div>
                 ))}
               </div>
             </motion.div>
 
-            {/* Right — text + certs */}
+            {/* Bio text */}
             <motion.div
-              variants={stagger}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.42, delay: 0.12, ease: "easeOut" }}
+              className="flex flex-col gap-6"
             >
-              <motion.div variants={fadeUp}>
-                <div className="section-label">Her Story</div>
-                <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2rem, 3vw, 2.8rem)", fontWeight: 400, lineHeight: 1.2, color: "var(--bark)", marginBottom: 24 }}>
-                  Rooted in tradition. <br />
-                  <span style={{ fontStyle: "italic" }}>Open to the world.</span>
+              <div className="rounded-2xl border border-yoga-border bg-white p-5 md:p-8">
+                <SectionLabel>Her story</SectionLabel>
+                <h2 className="font-display text-2xl font-bold leading-snug md:text-3xl">
+                  Rooted in tradition.{" "}
+                  <em className="text-yoga-clay">Open to every student.</em>
                 </h2>
-                <p className="about-bio-text">
-                  Nandini Singh is a globally certified yoga teacher whose path began in the sacred valleys of Rishikesh. Her teaching draws from the living roots of Indian philosophy — Patanjali's Yoga Sutras, Ayurvedic science, and the subtle art of pranayama.
+                <p className="mt-4 text-sm leading-8 text-yoga-ink/70 md:text-base">
+                  Nandini Singh has studied and taught yoga for over 15 years. Her path began
+                  in Rishikesh, where she trained with senior Iyengar teachers before earning
+                  formal certifications from Patanjali Yogpeeth and Isha Foundation.
                 </p>
-                <p className="about-bio-text" style={{ marginTop: 18 }}>
-                  Over fifteen years, she has guided thousands of students — from beginners discovering their first breath to advanced practitioners deepening long-standing practices. Her approach is unhurried, precise, and deeply personal.
+                <p className="mt-3 text-sm leading-8 text-yoga-ink/70 md:text-base">
+                  Her teaching is precise and unhurried — built for students who want to
+                  understand the practice, not just move through it. She has taught hundreds of
+                  students across levels and ages, primarily through small-group batch classes
+                  where each person gets real attention.
                 </p>
-              </motion.div>
+                <p className="mt-3 text-sm leading-8 text-yoga-ink/70 md:text-base">
+                  Classes are offered in Hindi and English, in-person (India) and online.
+                </p>
+              </div>
 
-              {/* Certifications */}
-              <motion.div variants={fadeUp} custom={1} style={{ marginTop: 36, display: "flex", flexDirection: "column", gap: 12 }}>
-                <p style={{ fontFamily: "var(--font-body)", fontSize: "0.65rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--terra)", marginBottom: 8 }}>Certifications</p>
-                {CERTIFICATIONS.map(({ org, focus, country }, i) => (
-                  <motion.div key={i} className="cert-card" variants={fadeUp} custom={i + 2}>
-                    <span className="cert-num">0{i + 1}</span>
-                    <div>
-                      <p className="cert-org">{org}</p>
-                      <p className="cert-focus">{focus}</p>
-                      <p className="cert-country">{country}</p>
-                    </div>
-                  </motion.div>
+              {/* Quick facts */}
+              <div className="grid gap-3 text-sm text-yoga-ink/55">
+                {[
+                  [Award, "Internationally certified — 500-hr training"],
+                  [MapPin, "Based in India · Online and in-person"],
+                  [Globe, "Classes in Hindi and English"],
+                ].map(([Icon, text]) => (
+                  <div key={text} className="flex items-center gap-3">
+                    <Icon className="h-5 w-5 shrink-0 text-yoga-sage" />
+                    <span>{text}</span>
+                  </div>
                 ))}
-              </motion.div>
+              </div>
             </motion.div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ── TIMELINE ── */}
-        <section className="about-timeline">
-          <div className="about-timeline-inner">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="section-label">Journey</div>
-              <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2rem, 3.5vw, 3rem)", fontWeight: 400, lineHeight: 1.2, color: "var(--bark)" }}>
-                Milestones along <span style={{ fontStyle: "italic" }}>the path.</span>
+      {/* ── CERTIFICATIONS ── */}
+      <section className="border-b border-yoga-border px-5 py-14 md:px-10 md:py-24">
+        <div className="mx-auto max-w-7xl">
+          <FadeUp className="max-w-xl">
+            <SectionLabel>Certifications</SectionLabel>
+            <h2 className="font-display text-3xl font-bold leading-tight md:text-5xl">
+              Trained at the{" "}
+              <em className="text-yoga-clay">source.</em>
+            </h2>
+            <p className="mt-3 text-sm leading-7 text-yoga-ink/55 md:text-base">
+              Every credential comes from institutions with deep roots in traditional Indian yoga.
+            </p>
+          </FadeUp>
+
+          <div className="mt-8 flex flex-col gap-4 md:mt-10">
+            {CERTIFICATIONS.map(({ org, focus, location }, i) => (
+              <FadeUp key={org} delay={i * 0.05}>
+                <div className="flex items-start gap-5 rounded-2xl border border-yoga-border bg-white p-5 md:p-6">
+                  <span className="font-display text-2xl font-bold text-yoga-border md:text-3xl">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <p className="font-medium text-yoga-ink">{org}</p>
+                    <p className="mt-0.5 text-sm text-yoga-ink/55">{focus}</p>
+                    <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.1em] text-yoga-sage">
+                      {location}
+                    </p>
+                  </div>
+                </div>
+              </FadeUp>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── TIMELINE ── */}
+      <section className="border-b border-yoga-border px-5 py-14 md:px-10 md:py-24">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+            <FadeUp>
+              <SectionLabel>Journey</SectionLabel>
+              <h2 className="font-display text-3xl font-bold leading-tight md:text-5xl">
+                Milestones along{" "}
+                <em className="text-yoga-clay">the path.</em>
               </h2>
-            </motion.div>
+            </FadeUp>
 
-            <div className="timeline-track">
+            <div className="relative pl-5 md:pl-8">
+              {/* Vertical line */}
+              <div className="absolute bottom-0 left-0 top-0 w-px bg-yoga-border" />
+
               {TIMELINE.map(({ year, event }, i) => (
-                <motion.div
-                  key={i}
-                  className="timeline-item"
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <div className="timeline-dot" />
-                  <p className="timeline-year">{year}</p>
-                  <p className="timeline-event">{event}</p>
-                </motion.div>
+                <FadeUp key={year} delay={i * 0.05}>
+                  <div className="relative mb-8 last:mb-0">
+                    {/* Dot */}
+                    <div className="absolute -left-[1.3rem] top-[5px] h-3 w-3 rounded-full border-2 border-white bg-yoga-sage shadow-sm md:-left-[2.1rem]" />
+                    <p className="font-display text-xl font-bold text-yoga-clay">{year}</p>
+                    <p className="mt-1 text-sm leading-7 text-yoga-ink/60 md:text-base">
+                      {event}
+                    </p>
+                  </div>
+                </FadeUp>
               ))}
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ── PHILOSOPHY ── */}
-        <section className="about-philosophy">
-          <div className="about-philosophy-inner">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 14, fontFamily: "var(--font-body)", fontSize: "0.65rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(247,243,236,0.4)", marginBottom: 16 }}>
-                <span>Teaching Philosophy</span>
-                <span style={{ flex: 1, height: 1, background: "rgba(247,243,236,0.1)" }} />
-              </div>
-              <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2rem, 3.5vw, 3rem)", fontWeight: 300, color: "var(--cream)", lineHeight: 1.2 }}>
-                What guides every <span style={{ fontStyle: "italic" }}>session.</span>
-              </h2>
-            </motion.div>
+      {/* ── PHILOSOPHY ── */}
+      <section className="bg-yoga-ink px-5 py-12 text-yoga-paper md:px-10 md:py-20">
+        <div className="mx-auto max-w-7xl">
+          <FadeUp>
+            <SectionLabel light>Teaching philosophy</SectionLabel>
+            <h2 className="max-w-xl font-display text-3xl font-bold leading-tight md:text-5xl">
+              What guides every session.
+            </h2>
+          </FadeUp>
 
-            <motion.div
-              className="phil-grid"
-              variants={stagger}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-            >
-              {PHILOSOPHY.map(({ icon, title, body }, i) => (
-                <motion.div key={i} className="phil-card" variants={fadeUp} custom={i}>
-                  <div className="phil-icon">{icon}</div>
-                  <h3 className="phil-title">{title}</h3>
-                  <p className="phil-body">{body}</p>
-                </motion.div>
-              ))}
-            </motion.div>
+          <div className="mt-8 grid gap-4 md:mt-10 md:grid-cols-3">
+            {PHILOSOPHY.map(({ icon: Icon, title, body }, i) => (
+              <FadeUp key={title} delay={i * 0.05}>
+                <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/10">
+                    <Icon className="h-5 w-5 text-yoga-sage" />
+                  </div>
+                  <h3 className="font-medium text-yoga-paper/90">{title}</h3>
+                  <p className="text-sm leading-7 text-white/40">{body}</p>
+                </div>
+              </FadeUp>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ── CLOSING ── */}
-        <section className="about-closing">
-          <motion.div
-            className="about-closing-inner"
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-          >
-            <div style={{ fontSize: "2rem", marginBottom: 28 }}>✦</div>
-            <p className="about-closing-quote">
-              "Each breath is a brushstroke painting your inner canvas with peace, balance, and joy."
+      {/* ── CLOSING CTA ── */}
+      <section className="border-t border-yoga-border px-5 py-14 md:px-10 md:py-20">
+        <div className="mx-auto max-w-3xl text-center">
+          <FadeUp>
+            <p className="font-display text-xl font-bold italic text-yoga-ink/40 md:text-2xl">
+              "Yoga is not about touching your toes. It is what you learn on the way down."
             </p>
-            <Link to="/contact" className="about-cta-btn">
-              Begin your practice →
-            </Link>
-          </motion.div>
-        </section>
-
-      </motion.div>
-    </>
+            <p className="mt-2 text-xs uppercase tracking-[0.12em] text-yoga-ink/30">
+              — Jigar Gor
+            </p>
+            <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+              <Link
+                to="/classes"
+                className="inline-flex min-h-[46px] items-center justify-center rounded-lg bg-yoga-ink px-6 text-sm font-medium text-yoga-paper transition hover:bg-black"
+              >
+                View Classes
+              </Link>
+              <Link
+                to="/contact"
+                className="inline-flex min-h-[46px] items-center justify-center rounded-lg border border-yoga-sage px-6 text-sm font-medium text-yoga-sage transition hover:bg-yoga-sage hover:text-white"
+              >
+                Get in touch
+              </Link>
+            </div>
+          </FadeUp>
+        </div>
+      </section>
+    </main>
   );
 };
 

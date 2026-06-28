@@ -1,55 +1,35 @@
-import React, { useEffect, useState } from 'react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '../firebase';
-import BlogPostCard from '../components/BlogPostCard';
-import { useNavigate, useLocation } from 'react-router-dom';
-import PinModal from '../components/PinModal';
-import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen } from 'lucide-react';
-import SEO from '../components/SEO';
-import { SITE_URL } from '../lib/site';
+import React, { useEffect, useState } from "react";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { db } from "../firebase";
+import BlogPostCard from "../components/BlogPostCard";
+import { useNavigate, useLocation } from "react-router-dom";
+import PinModal from "../components/PinModal";
+import { motion, AnimatePresence } from "framer-motion";
+import { BookOpen } from "lucide-react";
+import SEO from "../components/SEO";
+import NewsletterSection from "../components/NewsletterSection";
+import { SITE_URL } from "../lib/site";
 
-/* ─────────── FADE-UP HELPER ─────────── */
-const FadeUp = ({ children, delay = 0, className = "" }) => (
+/* ── Shared animation wrapper (same as Home / About / Gallery) ── */
+const FadeUp = ({ children, className = "", delay = 0 }) => (
   <motion.div
-    initial={{ opacity: 0, y: 24 }}
+    initial={{ opacity: 0, y: 18 }}
     whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-40px" }}
-    transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+    viewport={{ once: true, margin: "-48px" }}
+    transition={{ duration: 0.38, delay, ease: "easeOut" }}
     className={className}
   >
     {children}
   </motion.div>
 );
 
-/* ─────────── SECTION LABEL ─────────── */
-const Label = ({ children }) => (
-  <span
-    className="inline-block text-[10px] tracking-[0.22em] uppercase text-[#8BA5B5] font-semibold mb-4"
-    style={{ fontFamily: "'DM Sans', sans-serif" }}
-  >
+const SectionLabel = ({ children }) => (
+  <div className="mb-4 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] text-yoga-sage">
+    <span className="h-px w-5 bg-yoga-sage" />
     {children}
-  </span>
+  </div>
 );
 
-/* ─────────── CATEGORY PILL ─────────── */
-const CategoryPill = ({ label, active, onClick }) => (
-  <button
-    onClick={onClick}
-    className={`px-4 py-1.5 rounded-full text-[11px] tracking-[0.12em] uppercase font-medium transition-all duration-300 ${
-      active
-        ? "bg-[#1D3C52] text-white shadow-md"
-        : "bg-transparent border border-[#D8D2C4] text-[#8BA5B5] hover:border-[#1D3C52] hover:text-[#1D3C52]"
-    }`}
-    style={{ fontFamily: "'DM Sans', sans-serif" }}
-  >
-    {label}
-  </button>
-);
-
-/* ═══════════════════════════════════════
-   BLOG PAGE
-═══════════════════════════════════════ */
 const BlogPage = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -58,35 +38,36 @@ const BlogPage = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const navigate = useNavigate();
   const location = useLocation();
+
   const blogDescription =
-    "Read yoga, pranayama, Ayurveda, and mindful living articles from Yoga By Nandini. Practical guidance for building a calmer, stronger daily practice.";
+    "Read yoga, pranayama, and mindful living articles from Yoga by Nandini. Practical guidance for building a calmer, stronger daily practice.";
 
   const blogSchema = {
     "@context": "https://schema.org",
     "@type": "Blog",
-    name: "Yoga By Nandini Blog",
+    name: "Yoga by Nandini — Blog",
     url: `${SITE_URL}/blog`,
     description: blogDescription,
   };
 
-  // Derive unique categories from posts
-  const categories = ["All", ...Array.from(new Set(posts.map(p => p.category).filter(Boolean)))];
+  /* ── Derived data ── */
+  const categories = [
+    "All",
+    ...Array.from(new Set(posts.map((p) => p.category).filter(Boolean))),
+  ];
 
-  const filteredPosts = activeCategory === "All"
-    ? posts
-    : posts.filter(p => p.category === activeCategory);
+  const filteredPosts =
+    activeCategory === "All"
+      ? posts
+      : posts.filter((p) => p.category === activeCategory);
 
+  /* ── Fetch ── */
   useEffect(() => {
-    const fetchBlogPosts = async () => {
+    const fetchPosts = async () => {
       try {
-        const postsRef = collection(db, 'posts');
-        const q = query(postsRef, orderBy('date', 'desc'));
-        const querySnapshot = await getDocs(q);
-        const postData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setPosts(postData);
+        const q = query(collection(db, "posts"), orderBy("date", "desc"));
+        const snapshot = await getDocs(q);
+        setPosts(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
       } catch (err) {
         console.error("Failed to fetch posts:", err);
       } finally {
@@ -94,117 +75,33 @@ const BlogPage = () => {
       }
     };
 
-    const queryParams = new URLSearchParams(location.search);
-    const idFromUrl = queryParams.get('id');
-    if (idFromUrl) setBlogId(idFromUrl);
-
-    fetchBlogPosts();
+    const id = new URLSearchParams(location.search).get("id");
+    if (id) setBlogId(id);
+    fetchPosts();
   }, [location.search]);
 
+  /* ── Scroll to linked post ── */
   useEffect(() => {
-    if (blogId && posts.length > 0) {
-      const postElement = document.getElementById(blogId);
-      if (postElement) {
-        setTimeout(() => {
-          postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 500);
-      }
-    }
+    if (!blogId || posts.length === 0) return;
+    const el = document.getElementById(blogId);
+    if (el) setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "center" }), 500);
   }, [blogId, posts]);
 
   const handlePinSuccess = () => {
     setShowPinModal(false);
-    navigate('/admin');
+    navigate("/admin");
   };
 
   return (
-    <motion.div
-      className="min-h-screen bg-[#FAFAF7]"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
-    >
+    <main className="min-h-screen overflow-x-hidden bg-yoga-paper font-body text-yoga-ink">
       <SEO
-        title="Yoga and Pranayama Blog"
+        title="Yoga & Pranayama Blog | Yoga by Nandini"
         description={blogDescription}
         canonicalPath="/blog"
         schema={blogSchema}
       />
 
-      {/* ═══ HERO HEADER ═══ */}
-      <section className="bg-[#F4F1E6] pt-20 pb-16 border-b border-[#E8E4D8]">
-        {/* <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20"> */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8">
-
-            <div>
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Label>Wellness Journal</Label>
-              </motion.div>
-
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                className="text-[clamp(2rem,4.5vw,3.5rem)] font-normal leading-[1.1] text-[#1D3C52]"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-              >
-                Thoughts on<br />
-                <em className="italic text-[#8BA5B5]">Practice & Living</em>
-              </motion.h1>
-
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.7 }}
-                className="mt-5 text-[15px] leading-[1.85] text-[#5A7485] max-w-xl"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                Articles on yoga philosophy, breathwork, Ayurveda, and the quiet
-                discipline of building a life rooted in practice.
-              </motion.p>
-            </div>
-
-            {/* Upload button — admin only, hidden in plain sight */}
-            {/* <motion.button
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
-              onClick={() => setShowPinModal(true)}
-              className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-3 rounded-full border border-[#D8D2C4] text-[12px] tracking-[0.1em] uppercase font-medium text-[#8BA5B5] hover:border-[#1D3C52] hover:text-[#1D3C52] transition-all duration-300"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              <PlusCircle size={15} />
-              New Post
-            </motion.button>
-          </div> */}
-
-          {/* Category filter pills */}
-          {categories.length > 1 && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45, duration: 0.6 }}
-              className="mt-10 flex flex-wrap gap-2"
-            >
-              {categories.map((cat) => (
-                <CategoryPill
-                  key={cat}
-                  label={cat}
-                  active={activeCategory === cat}
-                  onClick={() => setActiveCategory(cat)}
-                />
-              ))}
-            </motion.div>
-          )}
-        </div>
-      </section>
-
-      {/* ═══ PIN MODAL ═══ */}
+      {/* ── Pin modal ── */}
       <AnimatePresence>
         {showPinModal && (
           <PinModal
@@ -214,162 +111,159 @@ const BlogPage = () => {
         )}
       </AnimatePresence>
 
-      {/* ═══ CONTENT ═══ */}
-      <section className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 py-20">
-
-        {/* Loading skeleton */}
-        {loading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="rounded-2xl bg-[#F0EDE0] animate-pulse h-64" />
-            ))}
-          </div>
-        )}
-
-        {/* Posts */}
-        {!loading && filteredPosts.length > 0 && (
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeCategory}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.4 }}
-            >
-              {/* Featured Post */}
-              <div className="mb-16" id={filteredPosts[0].id}>
-                <FadeUp>
-                  <div className="relative group bg-white rounded-3xl border border-[#E8E4D8] overflow-hidden hover:shadow-xl hover:border-[#A8BDC8] transition-all duration-500">
-                    <BlogPostCard post={filteredPosts[0]} featured />
-                    {/* Featured badge */}
-                    <div className="absolute top-6 left-6">
-                      <span
-                        className="px-3 py-1 rounded-full bg-[#1D3C52] text-white text-[10px] tracking-[0.2em] uppercase font-medium"
-                        style={{ fontFamily: "'DM Sans', sans-serif" }}
-                      >
-                        Latest
-                      </span>
-                    </div>
-                  </div>
-                </FadeUp>
-              </div>
-
-              {/* Post count */}
-              {filteredPosts.length > 1 && (
-                <FadeUp>
-                  <div className="flex items-center gap-4 mb-10">
-                    <span
-                      className="text-[11px] tracking-[0.18em] uppercase text-[#A09880]"
-                      style={{ fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                      {filteredPosts.length - 1} more {filteredPosts.length - 1 === 1 ? "essay" : "essays"}
-                    </span>
-                    <span className="flex-1 h-[1px] bg-[#E8E4D8]" />
-                  </div>
-                </FadeUp>
-              )}
-
-              {/* Grid */}
-              {filteredPosts.length > 1 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {filteredPosts.slice(1).map((post, i) => (
-                    <FadeUp key={post.id} delay={i * 0.08}>
-                      <div
-                        id={post.id}
-                        className="group bg-white rounded-2xl border border-[#E8E4D8] overflow-hidden hover:shadow-lg hover:border-[#A8BDC8] transition-all duration-400"
-                      >
-                        <BlogPostCard post={post} />
-                      </div>
-                    </FadeUp>
-                  ))}
-                </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
-        )}
-
-        {/* Empty state */}
-        {!loading && filteredPosts.length === 0 && (
+      {/* ── Page Header ── */}
+      <section className="border-b border-yoga-border px-5 pb-10 pt-32 md:px-10 md:pb-14 md:pt-36">
+        <div className="mx-auto max-w-7xl">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center py-32"
+            transition={{ duration: 0.42, ease: "easeOut" }}
           >
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#F0EDE0] mb-7">
-              <BookOpen className="text-[#A09880]" size={22} />
-            </div>
-            <h3
-              className="text-[1.4rem] font-normal text-[#1D3C52]"
-              style={{ fontFamily: "'Playfair Display', serif" }}
-            >
-              {activeCategory === "All" ? "No posts yet" : `No posts in "${activeCategory}"`}
-            </h3>
-            <p
-              className="mt-3 text-[14px] text-[#8BA5B5] max-w-sm mx-auto leading-relaxed"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              {activeCategory === "All"
-                ? "Wellness insights and essays will appear here once published."
-                : "Try selecting a different category above."}
+            <SectionLabel>Writing</SectionLabel>
+            <h1 className="max-w-2xl font-display text-[42px] font-bold leading-[1.08] text-yoga-ink sm:text-6xl lg:text-7xl">
+              Thoughts on{" "}
+              <em className="text-yoga-clay">practice.</em>
+            </h1>
+            <p className="mt-4 max-w-xl text-sm leading-8 text-yoga-ink/60 md:text-base">
+              Articles on yoga philosophy, breathwork, and the quiet discipline of
+              building a life rooted in practice.
             </p>
-            {activeCategory !== "All" && (
-              <button
-                onClick={() => setActiveCategory("All")}
-                className="mt-6 text-[12px] tracking-[0.1em] uppercase text-[#1D3C52] underline underline-offset-4 font-medium"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                View all posts
-              </button>
-            )}
           </motion.div>
-        )}
 
+          {/* ── Category filter ── */}
+          {!loading && categories.length > 1 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.38, delay: 0.12, ease: "easeOut" }}
+              className="mt-8 flex flex-wrap gap-2"
+            >
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`min-h-[36px] rounded-full border px-4 text-[11px] font-medium uppercase tracking-[0.1em] transition-colors ${
+                    activeCategory === cat
+                      ? "border-yoga-ink bg-yoga-ink text-yoga-paper"
+                      : "border-yoga-border bg-white text-yoga-ink/55 hover:border-yoga-ink/40 hover:text-yoga-ink"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </div>
       </section>
 
-      {/* ═══ NEWSLETTER FOOTER STRIP ═══ */}
-      {!loading && posts.length > 0 && (
-        <section className="bg-[#1D3C52] py-16">
-          <div className="max-w-2xl mx-auto px-6 text-center">
-            <FadeUp>
-              <p
-                className="text-[10px] tracking-[0.22em] uppercase text-[#8BA5B5] mb-4"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                Stay Connected
-              </p>
-              <h2
-                className="text-[1.6rem] font-normal text-[#E8F0F4] leading-snug"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-              >
-                Get essays delivered<br />
-                <em className="italic text-[#8BA5B5]">directly to your inbox</em>
-              </h2>
-              <form
-                className="mt-8 flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
-                onSubmit={(e) => e.preventDefault()}
-              >
-                <input
-                  type="email"
-                  placeholder="your@email.com"
-                  required
-                  className="flex-1 px-5 py-3 rounded-full border border-[#2E5470] bg-[#243F56] text-[14px] text-[#C8D8E0] placeholder-[#6B8A9A] focus:outline-none focus:ring-2 focus:ring-[#8BA5B5]/30 transition-all"
-                  style={{ fontFamily: "'DM Sans', sans-serif" }}
-                />
-                <button
-                  type="submit"
-                  className="px-6 py-3 rounded-full bg-white text-[#1D3C52] text-[12px] tracking-[0.12em] uppercase font-semibold hover:bg-[#F4F1E6] transition-all duration-300"
-                  style={{ fontFamily: "'DM Sans', sans-serif" }}
-                >
-                  Subscribe
-                </button>
-              </form>
-            </FadeUp>
-          </div>
-        </section>
-      )}
+      {/* ── Content ── */}
+      <section className="px-5 py-12 md:px-10 md:py-16">
+        <div className="mx-auto max-w-7xl">
 
-    </motion.div>
+          {/* Loading skeleton */}
+          {loading && (
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="h-64 animate-pulse rounded-2xl bg-yoga-mist"
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Posts */}
+          {!loading && filteredPosts.length > 0 && (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeCategory}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.3 }}
+              >
+                {/* Featured / latest post */}
+                <FadeUp className="mb-10 md:mb-14">
+                  <div
+                    id={filteredPosts[0].id}
+                    className="relative overflow-hidden rounded-2xl border border-yoga-border bg-white shadow-sm transition-shadow duration-300 hover:shadow-md"
+                  >
+                    {/* "Latest" badge */}
+                    <div className="absolute left-4 top-4 z-10 rounded-full bg-yoga-ink px-3 py-1 text-[10px] font-medium uppercase tracking-[0.15em] text-yoga-paper">
+                      Latest
+                    </div>
+                    <BlogPostCard post={filteredPosts[0]} featured />
+                  </div>
+                </FadeUp>
+
+                {/* Divider + count */}
+                {filteredPosts.length > 1 && (
+                  <FadeUp className="mb-8 flex items-center gap-4">
+                    <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-yoga-ink/35">
+                      {filteredPosts.length - 1}{" "}
+                      {filteredPosts.length - 1 === 1 ? "more post" : "more posts"}
+                    </span>
+                    <span className="h-px flex-1 bg-yoga-border" />
+                  </FadeUp>
+                )}
+
+                {/* Post grid */}
+                {filteredPosts.length > 1 && (
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                    {filteredPosts.slice(1).map((post, i) => (
+                      <FadeUp key={post.id} delay={i * 0.05}>
+                        <div
+                          id={post.id}
+                          className="h-full overflow-hidden rounded-2xl border border-yoga-border bg-white shadow-sm transition-shadow duration-300 hover:shadow-md"
+                        >
+                          <BlogPostCard post={post} />
+                        </div>
+                      </FadeUp>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          )}
+
+          {/* Empty state */}
+          {!loading && filteredPosts.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="flex flex-col items-center justify-center py-28 text-center"
+            >
+              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full border border-yoga-border bg-yoga-mist">
+                <BookOpen className="h-5 w-5 text-yoga-ink/30" />
+              </div>
+              <h3 className="font-display text-2xl font-bold text-yoga-ink/60">
+                {activeCategory === "All"
+                  ? "No posts yet"
+                  : `No posts in "${activeCategory}"`}
+              </h3>
+              <p className="mt-2 max-w-xs text-sm leading-7 text-yoga-ink/40">
+                {activeCategory === "All"
+                  ? "Essays and articles will appear here once published."
+                  : "Try a different category above."}
+              </p>
+              {activeCategory !== "All" && (
+                <button
+                  onClick={() => setActiveCategory("All")}
+                  className="mt-5 min-h-[44px] border-b border-yoga-ink text-sm font-medium text-yoga-ink"
+                >
+                  View all posts
+                </button>
+              )}
+            </motion.div>
+          )}
+
+        </div>
+      </section>
+
+      {/* ── Newsletter ── */}
+      {!loading && posts.length > 0 && <NewsletterSection />}
+    </main>
   );
 };
 
